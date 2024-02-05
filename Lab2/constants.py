@@ -5,6 +5,7 @@ keywords = {
     'std': 'NAMESPACE',
     'break': 'KEYWORD',
     'continue': 'KEYWORD',
+    'do': 'KEYWORD',
     'while': 'KEYWORD',
     'for': 'KEYWORD',
     'if': 'KEYWORD',
@@ -12,7 +13,7 @@ keywords = {
     'return': 'KEYWORD',
     'switch': 'KEYWORD',
     'case': 'KEYWORD',
-    'deault':'KEYWORD',
+    'default':'KEYWORD',
     'std::swap': 'KEYWORD',
     'private:': 'KEYWORD',
     'public:': 'KEYWORD',
@@ -44,6 +45,7 @@ keywords = {
 }
 
 operators = {
+    '->': 'POINTER',
     '.': 'OPERATOR',
     '+': 'ARITHMETIC OPERATOR',
     '-': 'ARITHMETIC OPERATOR',
@@ -81,7 +83,8 @@ operators = {
     '&': 'BITWISE OPERATOR',
     '|': 'BITWISE OPERATOR',
     '^': 'BITWISE OPERATOR',
-    '~': 'BITWISE OPERATOR'
+    '~': 'BITWISE OPERATOR',
+    '?': 'TERNARY OPERATOR'
 }
 
 data_types = {

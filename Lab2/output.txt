@@ -1,0 +1,60 @@
++----------------------------------------------------------------+
+|   №  |  Элемент               |   Информация                   |
++----------------------------------------------------------------+
+|  0     |#nclude                            |LEXICAL ERROR #nclude                               
+|  1     |<iostream>                         |LIBRARY                                             
+|  2     |#include                           |INCLUSION DIRECTIVE                                 
+|  3     |cmath>                             |LEXICAL ERROR cmath>                                
+|  4     |int                                |DATA TYPE                                           
+|  5     |main                               |FUNCTION OF TYPE INT                                
+|  6     |(                                  |PARENTHESIS                                         
+|  7     |)                                  |PARENTHESIS                                         
+|  8     |{                                  |PARENTHESIS                                         
+|  9     |int                                |DATA TYPE                                           
+|  10    |67num                              |LEXICAL ERROR 67num                                 
+|  11    |=                                  |ADDIGNMENT OPERATOR                                 
+|  12    |4                                  |INTEGER                                             
+|  13    |;                                  |END OF CONSTRUCTION                                 
+|  14    |float                              |DATA TYPE                                           
+|  15    |floatNum                           |VARIABLE OF TYPE FLOAT                              
+|  16    |=                                  |ADDIGNMENT OPERATOR                                 
+|  17    |16.25                              |FLOAT                                               
+|  18    |;                                  |END OF CONSTRUCTION                                 
+|  19    |std::cout                          |OUTPUT                                              
+|  20    |<<                                 |I/O OPERATOR                                        
+|  21    |"Printing using print function: "            |STRING                                              
+|  22    |;                                  |END OF CONSTRUCTION                                 
+|  23    |std::count                         |LEXICAL ERROR std::count                            
+|  24    |<<                                 |I/O OPERATOR                                        
+|  25    |"Power of 2: "                     |STRING                                              
+|  26    |<<                                 |I/O OPERATOR                                        
+|  27    |pow                                |FUNCTION                                            
+|  28    |(                                  |PARENTHESIS                                         
+|  29    |num                                |IDENTIFIER                                          
+|  30    |,                                  |COMA                                                
+|  31    |2                                  |INTEGER                                             
+|  32    |)                                  |PARENTHESIS                                         
+|  33    |<<                                 |I/O OPERATOR                                        
+|  34    |std::endl                          |OUTPUT MANIPULATOR                                  
+|  35    |;                                  |END OF CONSTRUCTION                                 
+|  36    |std::cout                          |OUTPUT                                              
+|  37    |<<                                 |I/O OPERATOR                                        
+|  38    |"Square root of "                  |STRING                                              
+|  39    |<<                                 |I/O OPERATOR                                        
+|  40    |floatNum                           |VARIABLE OF TYPE float                              
+|  41    |->                                 |POINTER                                             
+|  42    |<<                                 |I/O OPERATOR                                        
+|  43    |": "                               |STRING                                              
+|  44    |<<                                 |I/O OPERATOR                                        
+|  45    |sqrt                               |FUNCTION                                            
+|  46    |(                                  |PARENTHESIS                                         
+|  47    |floatNum                           |VARIABLE OF TYPE float                              
+|  48    |)                                  |PARENTHESIS                                         
+|  49    |<<                                 |I/O OPERATOR                                        
+|  50    |std::endl                          |OUTPUT MANIPULATOR                                  
+|  51    |;                                  |END OF CONSTRUCTION                                 
+|  52    |return                             |KEYWORD                                             
+|  53    |0                                  |INTEGER                                             
+|  54    |;                                  |END OF CONSTRUCTION                                 
+|  55    |}                                  |PARENTHESIS                                         
++----------------------------------------------------------------+

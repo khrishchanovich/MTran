@@ -32,8 +32,8 @@ def classify_token(token, prev_token, next_token, token_table):
         return 'HEADER FILE'
     elif token.startswith('<') and token.endswith('>'):
         return 'LIBRARY'
-    elif token.startswith('std::'):
-        return 'STL STRUCTURE'
+    # elif token.startswith('std::'):
+    #     return 'STL STRUCTURE'
     elif token.isidentifier():
         if token in token_table:
             return token_table[token]
@@ -68,6 +68,6 @@ def classify_token(token, prev_token, next_token, token_table):
         elif prev_token == 'default':
             return 'DEFAULT LABEL'
         else:
-            return 'CLASS MEMBER INITIALIZATION'
+            return 'COLON'
     else:
         return f'LEXICAL ERROR {token}'

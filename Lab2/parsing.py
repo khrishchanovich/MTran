@@ -62,8 +62,14 @@ def tokenize(code):
         else:
             current_token += char
 
-            if current_token in ('++', '--', '<<', '>>'):
+            if current_token in ('++', '--', '<<', '>>', '?:'):
                 tokens.append(current_token)
+                current_token = ''
+            elif current_token.endswith('?') and code[i + 1:i + 3] == ': ':
+                tokens.append(current_token[:-1])
+                tokens.append('?')
+                tokens.append(':')
+                i += 2
                 current_token = ''
 
         i += 1
