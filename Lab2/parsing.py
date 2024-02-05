@@ -1,4 +1,3 @@
-
 def tokenize(code):
     tokens = []
     current_token = ''
@@ -14,7 +13,6 @@ def tokenize(code):
             line_number += 1
             char_position = 0
 
-        # Обработка экранированных последовательностей
         if char == '\\':
             if i + 1 < len(code):
                 next_char = code[i + 1]
@@ -64,7 +62,6 @@ def tokenize(code):
         else:
             current_token += char
 
-            # Разделение токена, если это многосимвольный оператор или идентификатор
             if current_token in ('++', '--', '<<', '>>'):
                 tokens.append(current_token)
                 current_token = ''
@@ -74,8 +71,6 @@ def tokenize(code):
     if current_token:
         tokens.append(current_token)
 
-    # Объединяем типы данных 'long long', 'unsigned char', 'unsigned short', 'unsigned int',
-    # 'unsigned long', 'unsigned long long', 'long double', 'signed char' в один токен
     combined_tokens = []
     i = 0
     while i < len(tokens):

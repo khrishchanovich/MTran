@@ -1,11 +1,11 @@
 from constants import keywords, data_types, operators
 from type_cheking import is_integer_type, is_character_type, is_float_type, is_bool, is_string
 
+
 def classify_token(token, prev_token, next_token, token_table):
     if token in keywords:
         return keywords[token]
     elif token in operators:
-        # Check if it's a bitwise shift operator or I/O operator based on context
         if token in ('<<', '>>'):
             if prev_token == 'std::cout' or next_token == 'std::endl':
                 return 'I/O OPERATOR'
@@ -39,7 +39,6 @@ def classify_token(token, prev_token, next_token, token_table):
             return token_table[token]
         else:
             if next_token == '(':
-                # Check if a data type is specified before the function
                 if prev_token in data_types:
                     token_table[token] = f'FUNCTION OF TYPE {prev_token}'
                     return f'FUNCTION OF TYPE {prev_token.upper()}'
