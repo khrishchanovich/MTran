@@ -1,4 +1,4 @@
-from parsing import tokenize
+from scanning import tokenize
 from classification import classify_token
 from function import read_code_from_file, write_output_to_file
 
@@ -9,6 +9,7 @@ if __name__ == "__main__":
     code = read_code_from_file(file_path_input)
     tokens = tokenize(code)
     token_table = {}
+    print(tokens)
     output = ''
     output += "+----------------------------------------------------------------+\n"
     output += "|   №  |  Элемент               |   Информация                   |\n"

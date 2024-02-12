@@ -24,3 +24,6 @@ def is_bool(s):
 
 def is_string(s):
     return isinstance(s, str) and s.startswith('"') and s.endswith('"')
+
+def is_library(s):
+    return isinstance(s, str) and s.startswith('<') and s.endswith('>')
