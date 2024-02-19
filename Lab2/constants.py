@@ -49,6 +49,11 @@ keywords = {
     'printf': 'KEYWORD',
     'new': 'KEYWORD',
     'static': 'KEYWORD',
+    'operator': 'KEYWORD',
+    'this':'KEYWORD',
+    'friend': 'KEYWORD',
+    'auto': 'KEYWORD',
+    'nullptr': 'KEYWORD'
 }
 
 operators = {
@@ -125,7 +130,9 @@ data_types = {
 
 classes = {
     'ifstream': 'CLASS',
-    'ofstream': 'CLASS'
+    'ofstream': 'CLASS',
+    'ostream': 'CLASS',
+    'iostream': 'CLASS'
 }
 
 standart_function = {
@@ -176,3 +183,5 @@ standart_libraries = {
     '<tuple>': 'LIBRARY',
     '<utility>': 'LIBRARY',
 }
+
+special_symbols = ('#', '$', '№', '@')

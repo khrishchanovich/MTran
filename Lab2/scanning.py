@@ -6,6 +6,14 @@ def tokenize(code):
     line_number = 1
     char_position = 0
 
+    # invalid_variable_pattern = r'^(\w)([!@#$%^&*/*+_)(])(\w)$'
+    # # Поиск всех неправильно названных переменных в коде
+    # invalid_variable_tokens = re.findall(invalid_variable_pattern, code)
+    #
+    # # Замена неправильно названных переменных на один токен
+    # for invalid_variable in invalid_variable_tokens:
+    #     code = code.replace(invalid_variable, 'INVALID_VARIABLE')
+
     i = 0
     while i < len(code):
         char = code[i]
@@ -71,7 +79,7 @@ def tokenize(code):
             i += 1
         elif inside_comment:
             current_token += char
-        elif char == '#':
+        elif char in ('№','@','#','$'):
             current_token += char
             i += 1
             while i < len(code) and not code[i].isspace():
@@ -269,4 +277,4 @@ def tokenize(code):
             combined_tokens.append(tokens[i])
             i += 1
 
-    return combined_tokens
+    return combined_tokens 
