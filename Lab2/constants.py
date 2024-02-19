@@ -53,7 +53,11 @@ keywords = {
     'this':'KEYWORD',
     'friend': 'KEYWORD',
     'auto': 'KEYWORD',
-    'nullptr': 'KEYWORD'
+    'nullptr': 'KEYWORD',
+    'try': 'KEYWORD',
+    'catch': 'KEYWORD',
+    'exception': 'KEYWORD',
+    'setlocale': 'KEYWORD'
 }
 
 operators = {
@@ -163,25 +167,25 @@ containers = {
 }
 
 standart_libraries = {
-    '<iostream>': 'LIBRARY',
-    '<algorithm>': 'LIBRARY',
+    'iostream': 'LIBRARY',
+    'algorithm': 'LIBRARY',
     '<string>': 'LIBRARY',
-    '<cmath>': 'LIBRARY',
-    '<ctime>': 'LIBRARY',
-    '<cstdlib>': 'LIBRARY',
-    '<cstdio>': 'LIBRARY',
-    '<fstream>': 'LIBRARY',
-    '<iomanip>': 'LIBRARY',
-    '<sstream>': 'LIBRARY',
-    '<stdexcept>': 'LIBRARY',
+    'cmath': 'LIBRARY',
+    'ctime': 'LIBRARY',
+    'cstdlib': 'LIBRARY',
+    'cstdio': 'LIBRARY',
+    'fstream': 'LIBRARY',
+    'iomanip': 'LIBRARY',
+    'sstream': 'LIBRARY',
+    'stdexcept': 'LIBRARY',
     '<limits>': 'LIBRARY',
     '<locale>': 'LIBRARY',
     '<memory>': 'LIBRARY',
     '<thread>': 'LIBRARY',
     '<chrono>': 'LIBRARY',
-    '<regex>': 'LIBRARY',
+    'regex': 'LIBRARY',
     '<tuple>': 'LIBRARY',
-    '<utility>': 'LIBRARY',
+    'utility': 'LIBRARY',
 }
 
 special_symbols = ('#', '$', '№', '@')

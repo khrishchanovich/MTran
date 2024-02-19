@@ -5,6 +5,8 @@ from type_cheking import is_integer_type, is_character_type, is_float_type, is_b
 list_data_types = []
 list_containers = []
 lexical_error_tokens = []
+allowed_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890'
+
 
 def check_match(element: str, identifiers):
     ident = [iden[1] for iden in identifiers]
@@ -113,6 +115,14 @@ def classify_token(token, prev_token, next_token, token_table):
                     token_table[token] = 'ASTERIK'
                     return 'ASTERIK'
                 return 'ARITHMETIC OPERATOR'
+        if token in ('++', '--', '&&', '=='):
+            if prev_token:
+                if prev_token in ('+', '-', '&', '=', '++', '--', '&&', '=='):
+                    return 'LEXICAL ERROR'
+        if token in ('+', '-', '&', '='):
+            if prev_token:
+                if prev_token in ('&&', '++', '--', '=='):
+                    return 'LEXICAL ERROR'
         if token == '&':
             if prev_token in data_types or (prev_token in token_table and token_table[prev_token] == 'CLASS') \
                     or (prev_token in classes) or prev_token in keywords:
@@ -121,6 +131,10 @@ def classify_token(token, prev_token, next_token, token_table):
             else:
                 token_table[token] = 'BITWISE OPERATOR'
                 return 'BITWISE OPERATOR'
+        if token == '.':
+            if prev_token:
+                if is_float_type(prev_token):
+                    return 'LEXICAL ERROR'
         token_table[token] = operators[token]
         return operators[token]
     elif token in data_types:
@@ -137,6 +151,8 @@ def classify_token(token, prev_token, next_token, token_table):
             return 'HEADER FILE'
         return 'STRING'
     elif is_integer_type(token):
+        if prev_token == '.':
+            return 'LEXICAL ERROR'
         return 'INTEGER'
     elif is_float_type(token):
         return 'FLOAT'
@@ -145,18 +161,26 @@ def classify_token(token, prev_token, next_token, token_table):
     elif is_character_type(token):
         return 'CHAR'
     elif token.isidentifier():
+        if prev_token in ('/*', '//'):
+            return 'STRING OF COMMENT'
+        if not all(char in allowed_symbols for char in token):
+            if token[0].isdigit():
+                lexical_error_tokens.append(token)
+                return 'LEXICAL ERROR! Identifier cannot start with a digit.'
+            return 'LEXICAL ERROR! Token contains invalid symbols.'
         if any(char in token for char in special_symbols):
             return 'LEXICAL ERROR! Special symbols detected!'
         if token[0].isdigit():
             lexical_error_tokens.append(token)
             return 'LEXICAL ERROR! Identifier cannot start with a digit.'
-        if any(char in token for char in special_symbols):
-            return 'LEXICAL ERROR! Special symbols detected!'
         if token in token_table:
             if next_token == '(' and token_table[token] == 'CLASS':
                 return 'CONSTUCTURE'
             return token_table[token]
         else:
+            if prev_token == '#define':
+                token_table[token] = 'VARIABLE'
+                return 'VARIABLE'
             if prev_token == '~' and next_token == '(':
                 return 'DESCTRUCTURE'
             if prev_token == '::':
@@ -184,15 +208,23 @@ def classify_token(token, prev_token, next_token, token_table):
                     if prev_token in token_table and token_table[prev_token] == 'CLASS POINTER':
                         token_table[token] = f'METHOD OF CLASS'
                         return f'METHOD OF CLASS'
-                    token_table[token] = f'FUNCTION (POINTER {list_data_types[-1].upper()})'
+                    if len(list_data_types) != 0:
+                        token_table[token] = f'FUNCTION (POINTER {list_data_types[-1].upper()})'
+                    else:
+                        token_table[token] = f'FUNCTION (POINTER)'
+                        return f'FUNCTION (POINTER)'
                     return f'FUNCTION (POINTER {list_data_types[-1].upper()})'
             else:
                 if prev_token == '*' and (prev_token in token_table and token_table[prev_token] == 'CLASS POINTER'):
                     token_table[token] = f'METHOD OF CLASS'
                     return f'METHOD OF CLASS'
                 if prev_token in data_types or prev_token == ',':
-                    token_table[token] = f'VARIABLE ({list_data_types[-1].upper()})'
-                    return f'VARIABLE ({list_data_types[-1].upper()})'
+                    if len(list_data_types) != 0:
+                        token_table[token] = f'VARIABLE ({list_data_types[-1].upper()})'
+                        return f'VARIABLE ({list_data_types[-1].upper()})'
+                    else:
+                        token_table[token] = f'VARIABLE'
+                        return f'VARIABLE'
                 elif prev_token == '*':
                     if len(list_data_types) != 0:
                         # token_table[token] = f'POINTER ({list_data_types[-1].upper()})'
@@ -219,15 +251,14 @@ def classify_token(token, prev_token, next_token, token_table):
                 return 'METHOD'
             else:
                 match = check_match(token, token_table.items())
-                if prev_token in token_table and token_table[prev_token] == 'SIMILAR':
-                    token_table[token] = 'IDENTIFIER'
-                    return 'IDENTIFIER'
+                # if prev_token in token_table and token_table[prev_token] == 'SIMILAR':
+                #     token_table[token] = 'IDENTIFIER'
+                #     return 'IDENTIFIER'
                 if match:
                     token_table[token] = 'SIMILAR'
-                    return f'!!!SIMILAR TO: {match}'
+                    return f'LEXICAL ERROR! SIMILAR TO: {match}'
                 else:
-                    return f'UNRECOGNIZED IDENTIFIER: {token}'
-
+                    return f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER: {token}'
     else:
         if prev_token in ('/*', '//'):
             return 'STRING OF COMMENT'
@@ -264,5 +295,12 @@ def classify_token(token, prev_token, next_token, token_table):
                 token_table[token] = 'IDENTIFICATOR'
                 return 'IDENTIFICATOR'
         else:
-            lexical_error_tokens.append(token)
-            return f'LEXICAL ERROR! {token}'
+            match = check_match(token, token_table.items())
+            # if prev_token in token_table and token_table[prev_token] == 'SIMILAR':
+            #     token_table[token] = 'IDENTIFIER'
+            #     return 'IDENTIFIER'
+            if match:
+                token_table[token] = 'SIMILAR'
+                return f'LEXICAL ERROR! SIMILAR TO: {match}'
+            else:
+                return f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER: {token}'
