@@ -1,5 +1,8 @@
 keywords = {
-    '#include': 'INCLUSION DIRECTIVE',
+    '#include': 'PREPROCESSOR DIRECTIVE',
+    '#define': 'MACRO',
+    '#ifndef': 'MACRO',
+    '#endif': 'MACRO',
     'system': 'KEYWORD',
     'using': 'KEYWORD',
     'namespace': 'KEYWORD',
@@ -43,7 +46,9 @@ keywords = {
     'realloc': 'KEYWORD',
     'sizeof': 'KEYWORD',
     'NULL': 'KEYWORD',
-    'printf': 'KEYWORD'
+    'printf': 'KEYWORD',
+    'new': 'KEYWORD',
+    'static': 'KEYWORD',
 }
 
 operators = {
@@ -83,7 +88,7 @@ operators = {
     '&&': 'LOGICAL OPERATOR',
     '||': 'LOGICAL OPERATOR',
     '!': 'LOGICAL OPERATOR',
-    '&': 'BITWISE OPERATOR',
+    '&': 'OPERATOR',
     '|': 'BITWISE OPERATOR',
     '^': 'BITWISE OPERATOR',
     '~': 'OPERATOR',
@@ -114,7 +119,28 @@ data_types = {
     'char16_t': 'DATA TYPE',
     'char32_t': 'DATA TYPE',
     'string': 'DATA TYPE',
-    'T': 'TYPE',
+    'uint32_t': 'DATA TYPE',
+    'size_t': 'DATA TYPE',
+}
+
+classes = {
+    'ifstream': 'CLASS',
+    'ofstream': 'CLASS'
+}
+
+standart_function = {
+    'strcpy': 'STANDART FUNCTION',
+    'strlen':'STANDART FUNCTION',
+    'strcat':'STANDART FUNCTION',
+    'strstr':'STANDART FUNCTION',
+    'strtok':'STANDART FUNCTION',
+    'sprintf':'STANDART FUNCTION',
+    'strcmp':'STANDART FUNCTION',
+    'strchr':'STANDART FUNCTION',
+    'strrchr': 'STANDART FUNCTION',
+}
+
+containers = {
     'vector': 'CONTAINER',
     'list': 'CONTAINER',
     'deque': 'CONTAINER',
@@ -127,28 +153,26 @@ data_types = {
     'unordered_map': 'CONTAINER',
     'multimap': 'CONTAINER',
     'bitset': 'CONTAINER',
-    'ifstream': 'CLASS',
-    'ofstream': 'CLASS'
 }
 
-standart_function = {
-    'strcpy': 'STANDART FUNCTION',
-    'strlen':'STANDART FUNCTION',
-    'strcat':'STANDART FUNCTION',
-    'strstr':'STANDART FUNCTION',
-    'strtok':'STANDART FUNCTION',
-    'sprintf':'STANDART FUNCTION',
-    'strncmp':'STANDART FUNCTION',
-    'strchr':'STANDART FUNCTION',
-    'strrchr': 'STANDART FUNCTION',
+standart_libraries = {
+    '<iostream>': 'LIBRARY',
+    '<algorithm>': 'LIBRARY',
+    '<string>': 'LIBRARY',
+    '<cmath>': 'LIBRARY',
+    '<ctime>': 'LIBRARY',
+    '<cstdlib>': 'LIBRARY',
+    '<cstdio>': 'LIBRARY',
+    '<fstream>': 'LIBRARY',
+    '<iomanip>': 'LIBRARY',
+    '<sstream>': 'LIBRARY',
+    '<stdexcept>': 'LIBRARY',
+    '<limits>': 'LIBRARY',
+    '<locale>': 'LIBRARY',
+    '<memory>': 'LIBRARY',
+    '<thread>': 'LIBRARY',
+    '<chrono>': 'LIBRARY',
+    '<regex>': 'LIBRARY',
+    '<tuple>': 'LIBRARY',
+    '<utility>': 'LIBRARY',
 }
-
-# sufix = {
-#     'L': 'TYPE SUFFIX',
-#     'LL': 'TYPE SUFFIX',
-#     'U': 'TYPE SUFFIX',
-#     'UL': 'TYPE SUFFIX',
-#     'ULL': 'TYPE SUFFIX',
-#     'F': 'TYPE SUFFIX',
-#     'D': 'TYPE SUFFIX',
-# }

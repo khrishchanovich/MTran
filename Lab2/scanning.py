@@ -71,6 +71,14 @@ def tokenize(code):
             i += 1
         elif inside_comment:
             current_token += char
+        elif char == '#':
+            current_token += char
+            i += 1
+            while i < len(code) and not code[i].isspace():
+                current_token += code[i]
+                i += 1
+            tokens.append(current_token)
+            current_token = ''
         elif char in ('(', ')', '{', '}', '[', ']', ',', ';', '<', '>'):
             if current_token:
                 tokens.append(current_token)
@@ -138,7 +146,7 @@ def tokenize(code):
     i = 0
 
     while i < len(tokens):
-        if tokens[i] == '<' and tokens[i + 1] != '<':
+        if tokens[i - 1] == '#include' and tokens[i] == '<' and tokens[i + 1] != '<':
             end_index = i + 1
             while end_index < len(tokens) and tokens[end_index] != '>':
                 end_index += 1
@@ -256,9 +264,6 @@ def tokenize(code):
             i += 2
         elif tokens[i:i + 2] == ['signed', 'char']:
             combined_tokens.append('signed char')
-            i += 2
-        elif tokens[i:i + 2] == ['#', 'include']:
-            combined_tokens.append('#include')
             i += 2
         else:
             combined_tokens.append(tokens[i])
