@@ -9,7 +9,7 @@ allowed_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_12345678
 
 
 def check_match(element: str, identifiers):
-    ident = [iden[1] for iden in identifiers]
+    ident = [iden[0] for iden in identifiers]
     keyws = list(keywords.keys())
     datas = list(data_types.keys())
     conts = list(containers.keys())
@@ -57,6 +57,10 @@ def classify_token(token, prev_token, next_token, token_table):
         #         return 'I/O OPERATOR'
         #     else:
         #         return 'I/O OPERATOR'
+        if token in ('<', '>'):
+            if prev_token:
+                if prev_token in ('<<', '>>'):
+                    return 'LEXICAL ERROR'
         if token == '~':
             if token_table[next_token] == 'ClASS':
                 token_table[token] = 'TILDA'
@@ -232,8 +236,8 @@ def classify_token(token, prev_token, next_token, token_table):
                         token_table[token] = f'POINTER'
                         return f'POINTER'
                     else:
-                        token_table[token] = 'IDENTIFICATOR'
-                        return 'IDENTIFICATOR'
+                        token_table[token] = 'UNRECOGNIZED IDENTIFIER'
+                        return 'UNRECOGNIZED IDENTIFIER'
             if next_token == '{':
                 if prev_token in 'class':
                     token_table[token] = 'CLASS'
@@ -256,9 +260,10 @@ def classify_token(token, prev_token, next_token, token_table):
                 #     return 'IDENTIFIER'
                 if match:
                     token_table[token] = 'SIMILAR'
+
                     return f'LEXICAL ERROR! SIMILAR TO: {match}'
                 else:
-                    return f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER: {token}'
+                    return f'UNRECOGNIZED IDENTIFIER'
     else:
         if prev_token in ('/*', '//'):
             return 'STRING OF COMMENT'
@@ -272,16 +277,16 @@ def classify_token(token, prev_token, next_token, token_table):
             elif is_float_type(token[:-2]):
                 return 'FLOAT'
             else:
-                token_table[token] = 'IDENTIFICATOR'
-                return 'IDENTIFICATOR'
+                token_table[token] = 'UNRECOGNIZED IDENTIFIER'
+                return 'UNRECOGNIZED IDENTIFIER'
         elif token.endswith(('ULL', 'ull')):
             if is_integer_type(token[:-3]):
                 return 'INTEGER'
             elif is_float_type(token[:-3]):
                 return 'FLOAT'
             else:
-                token_table[token] = 'IDENTIFICATOR'
-                return 'IDENTIFICATOR'
+                token_table[token] = 'UNRECOGNIZED IDENTIFIER'
+                return 'UNRECOGNIZED IDENTIFIER'
         elif token.endswith(('L', 'l', 'F', 'f', 'D', 'd')):
             if is_integer_type(token[:-1]):
                 return 'INTEGER'
@@ -292,8 +297,8 @@ def classify_token(token, prev_token, next_token, token_table):
                     return 'LEXICAL ERROR! Identifier cannot start with a digit.'
                 if any(char in token for char in special_symbols):
                     return 'LEXICAL ERROR! Special symbols detected!'
-                token_table[token] = 'IDENTIFICATOR'
-                return 'IDENTIFICATOR'
+                token_table[token] = 'UNRECOGNIZED IDENTIFIER'
+                return 'UNRECOGNIZED IDENTIFIER'
         else:
             match = check_match(token, token_table.items())
             # if prev_token in token_table and token_table[prev_token] == 'SIMILAR':
@@ -303,4 +308,4 @@ def classify_token(token, prev_token, next_token, token_table):
                 token_table[token] = 'SIMILAR'
                 return f'LEXICAL ERROR! SIMILAR TO: {match}'
             else:
-                return f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER: {token}'
+                return f'UNRECOGNIZED IDENTIFIER'

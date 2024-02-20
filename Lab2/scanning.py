@@ -207,9 +207,9 @@ def tokenize(code):
         elif tokens[i:i + 2] == ['<', '=']:
             combined_tokens.append('<=')
             i += 2
-        elif tokens[i:i + 2] == ['>', '>']:
-            combined_tokens.append('!=')
-            i += 2
+        # elif tokens[i:i + 2] == ['>', '>']:
+        #     combined_tokens.append('!=')
+        #     i += 2
         elif tokens[i:i + 2] == ['&', '&']:
             combined_tokens.append('&&')
             i += 2
@@ -255,9 +255,9 @@ def tokenize(code):
         elif tokens[i:i + 2] == ['unsigned', 'long']:
             combined_tokens.append('unsigned long')
             i += 2
-        elif tokens[i:i + 4] == ['unsigned', 'long', 'long', 'double']:
-            combined_tokens.append('unsigned long long double')
-            i += 4
+        # elif tokens[i:i + 4] == ['unsigned', 'long', 'long']:
+        #     combined_tokens.append('unsigned long long')
+        #     i += 4
         elif tokens[i:i + 2] == ['long', 'long']:
             combined_tokens.append('long long')
             i += 2
@@ -277,4 +277,4 @@ def tokenize(code):
             combined_tokens.append(tokens[i])
             i += 1
 
-    return combined_tokens 
+    return combined_tokens
