@@ -1,182 +1,19 @@
 +----------------------------------------------------------------+
 |   №  |  Элемент               |   Информация                   |
 +----------------------------------------------------------------+
-|  0     |#include                           |PREPROCESSOR DIRECTIVE                              
-|  1     |<iostream>                         |HEADER FILE                                         
-|  2     |class                              |KEYWORD                                             
-|  3     |Rectangle                          |CLASS                                               
-|  4     |{                                  |PARENTHESIS                                         
-|  5     |private                            |KEYWORD                                             
-|  6     |:                                  |COLON                                               
-|  7     |int                                |DATA TYPE                                           
-|  8     |width                              |VARIABLE (INT)                                      
-|  9     |;                                  |END OF CONSTRUCTION                                 
-|  10    |int                                |DATA TYPE                                           
-|  11    |height                             |VARIABLE (INT)                                      
-|  12    |;                                  |END OF CONSTRUCTION                                 
-|  13    |public                             |KEYWORD                                             
-|  14    |:                                  |COLON                                               
-|  15    |Rectangle                          |CONSTUCTURE                                         
-|  16    |(                                  |PARENTHESIS                                         
-|  17    |int                                |DATA TYPE                                           
-|  18    |w                                  |VARIABLE (INT)                                      
-|  19    |,                                  |COMA                                                
-|  20    |int                                |DATA TYPE                                           
-|  21    |h                                  |VARIABLE (INT)                                      
-|  22    |)                                  |PARENTHESIS                                         
-|  23    |{                                  |PARENTHESIS                                         
-|  24    |}                                  |PARENTHESIS                                         
-|  25    |void                               |DATA TYPE                                           
-|  26    |setWidth                           |FUNCTION (VOID)                                     
-|  27    |(                                  |PARENTHESIS                                         
-|  28    |int                                |DATA TYPE                                           
-|  29    |w                                  |VARIABLE (INT)                                      
-|  30    |)                                  |PARENTHESIS                                         
-|  31    |{                                  |PARENTHESIS                                         
-|  32    |width                              |VARIABLE (INT)                                      
-|  33    |=                                  |ASSIGNMENT OPERATOR                                 
-|  34    |w                                  |VARIABLE (INT)                                      
-|  35    |;                                  |END OF CONSTRUCTION                                 
-|  36    |}                                  |PARENTHESIS                                         
-|  37    |void                               |DATA TYPE                                           
-|  38    |setHeight                          |FUNCTION (VOID)                                     
-|  39    |(                                  |PARENTHESIS                                         
-|  40    |int                                |DATA TYPE                                           
-|  41    |h                                  |VARIABLE (INT)                                      
-|  42    |)                                  |PARENTHESIS                                         
-|  43    |{                                  |PARENTHESIS                                         
-|  44    |height                             |VARIABLE (INT)                                      
-|  45    |=                                  |ASSIGNMENT OPERATOR                                 
-|  46    |h                                  |VARIABLE (INT)                                      
-|  47    |;                                  |END OF CONSTRUCTION                                 
-|  48    |}                                  |PARENTHESIS                                         
-|  49    |int                                |DATA TYPE                                           
-|  50    |getWidth                           |FUNCTION (INT)                                      
-|  51    |(                                  |PARENTHESIS                                         
-|  52    |)                                  |PARENTHESIS                                         
-|  53    |const                              |KEYWORD                                             
-|  54    |{                                  |PARENTHESIS                                         
-|  55    |return                             |KEYWORD                                             
-|  56    |width                              |VARIABLE (INT)                                      
-|  57    |;                                  |END OF CONSTRUCTION                                 
-|  58    |}                                  |PARENTHESIS                                         
-|  59    |int                                |DATA TYPE                                           
-|  60    |getHeight                          |FUNCTION (INT)                                      
-|  61    |(                                  |PARENTHESIS                                         
-|  62    |)                                  |PARENTHESIS                                         
-|  63    |const                              |KEYWORD                                             
-|  64    |{                                  |PARENTHESIS                                         
-|  65    |return                             |KEYWORD                                             
-|  66    |height                             |VARIABLE (INT)                                      
-|  67    |;                                  |END OF CONSTRUCTION                                 
-|  68    |}                                  |PARENTHESIS                                         
-|  69    |int                                |DATA TYPE                                           
-|  70    |area                               |FUNCTION (INT)                                      
-|  71    |(                                  |PARENTHESIS                                         
-|  72    |)                                  |PARENTHESIS                                         
-|  73    |const                              |KEYWORD                                             
-|  74    |{                                  |PARENTHESIS                                         
-|  75    |return                             |KEYWORD                                             
-|  76    |width                              |VARIABLE (INT)                                      
-|  77    |*                                  |ARITHMETIC OPERATOR                                 
-|  78    |height                             |VARIABLE (INT)                                      
-|  79    |;                                  |END OF CONSTRUCTION                                 
-|  80    |}                                  |PARENTHESIS                                         
-|  81    |}                                  |PARENTHESIS                                         
-|  82    |;                                  |END OF CONSTRUCTION                                 
-|  83    |int                                |DATA TYPE                                           
-|  84    |main                               |FUNCTION (INT)                                      
-|  85    |(                                  |PARENTHESIS                                         
-|  86    |)                                  |PARENTHESIS                                         
-|  87    |{                                  |PARENTHESIS                                         
-|  88    |Rectangle                          |CLASS                                               
-|  89    |rect                               |OBJECT OF Rectangle                                 
-|  90    |(                                  |PARENTHESIS                                         
-|  91    |5                                  |INTEGER                                             
-|  92    |,                                  |COMA                                                
-|  93    |3                                  |INTEGER                                             
-|  94    |)                                  |PARENTHESIS                                         
-|  95    |;                                  |END OF CONSTRUCTION                                 
-|  96    |std                                |NAMESPACE                                           
-|  97    |::                                 |DOUBLE COLON                                        
-|  98    |cout                               |OUTPUT                                              
-|  99    |<<                                 |OPERATOR                                            
-|  100   |"Width: "                          |STRING                                              
-|  101   |<<                                 |OPERATOR                                            
-|  102   |rect                               |OBJECT OF Rectangle                                 
-|  103   |.                                  |OPERATOR                                            
-|  104   |getWidth                           |FUNCTION (INT)                                      
-|  105   |(                                  |PARENTHESIS                                         
-|  106   |)                                  |PARENTHESIS                                         
-|  107   |<<                                 |OPERATOR                                            
-|  108   |std                                |NAMESPACE                                           
-|  109   |::                                 |DOUBLE COLON                                        
-|  110   |endl                               |OUTPUT MANIPULATOR                                  
-|  111   |;                                  |END OF CONSTRUCTION                                 
-|  112   |std                                |NAMESPACE                                           
-|  113   |::                                 |DOUBLE COLON                                        
-|  114   |cout                               |OUTPUT                                              
-|  115   |<<                                 |OPERATOR                                            
-|  116   |"Height: "                         |STRING                                              
-|  117   |<<                                 |OPERATOR                                            
-|  118   |rect                               |OBJECT OF Rectangle                                 
-|  119   |.                                  |OPERATOR                                            
-|  120   |getHeight                          |FUNCTION (INT)                                      
-|  121   |(                                  |PARENTHESIS                                         
-|  122   |)                                  |PARENTHESIS                                         
-|  123   |<<                                 |OPERATOR                                            
-|  124   |std                                |NAMESPACE                                           
-|  125   |::                                 |DOUBLE COLON                                        
-|  126   |endl                               |OUTPUT MANIPULATOR                                  
-|  127   |;                                  |END OF CONSTRUCTION                                 
-|  128   |std                                |NAMESPACE                                           
-|  129   |::                                 |DOUBLE COLON                                        
-|  130   |cout                               |OUTPUT                                              
-|  131   |<<                                 |OPERATOR                                            
-|  132   |"Area of the rectangle: "            |STRING                                              
-|  133   |<<                                 |OPERATOR                                            
-|  134   |rect                               |OBJECT OF Rectangle                                 
-|  135   |.                                  |OPERATOR                                            
-|  136   |area                               |FUNCTION (INT)                                      
-|  137   |(                                  |PARENTHESIS                                         
-|  138   |)                                  |PARENTHESIS                                         
-|  139   |<<                                 |OPERATOR                                            
-|  140   |std                                |NAMESPACE                                           
-|  141   |::                                 |DOUBLE COLON                                        
-|  142   |endl                               |OUTPUT MANIPULATOR                                  
-|  143   |;                                  |END OF CONSTRUCTION                                 
-|  144   |rect                               |OBJECT OF Rectangle                                 
-|  145   |.                                  |OPERATOR                                            
-|  146   |setWidth                           |FUNCTION (VOID)                                     
-|  147   |(                                  |PARENTHESIS                                         
-|  148   |7                                  |INTEGER                                             
-|  149   |)                                  |PARENTHESIS                                         
-|  150   |;                                  |END OF CONSTRUCTION                                 
-|  151   |rect                               |OBJECT OF Rectangle                                 
-|  152   |.                                  |OPERATOR                                            
-|  153   |setHeight                          |FUNCTION (VOID)                                     
-|  154   |(                                  |PARENTHESIS                                         
-|  155   |4                                  |INTEGER                                             
-|  156   |)                                  |PARENTHESIS                                         
-|  157   |;                                  |END OF CONSTRUCTION                                 
-|  158   |std                                |NAMESPACE                                           
-|  159   |::                                 |DOUBLE COLON                                        
-|  160   |cout                               |OUTPUT                                              
-|  161   |<<                                 |OPERATOR                                            
-|  162   |"Updated area of the rectangle: "            |STRING                                              
-|  163   |<<                                 |OPERATOR                                            
-|  164   |rect                               |OBJECT OF Rectangle                                 
-|  165   |.                                  |OPERATOR                                            
-|  166   |area                               |FUNCTION (INT)                                      
-|  167   |(                                  |PARENTHESIS                                         
-|  168   |)                                  |PARENTHESIS                                         
-|  169   |<<                                 |OPERATOR                                            
-|  170   |std                                |NAMESPACE                                           
-|  171   |::                                 |DOUBLE COLON                                        
-|  172   |endl                               |OUTPUT MANIPULATOR                                  
-|  173   |;                                  |END OF CONSTRUCTION                                 
-|  174   |return                             |KEYWORD                                             
-|  175   |0                                  |INTEGER                                             
-|  176   |;                                  |END OF CONSTRUCTION                                 
-|  177   |}                                  |PARENTHESIS                                         
+|  0     |int                                |DATA TYPE                                           
+|  1     |a                                  |VARIABLE (INT)                                      
+|  2     |;                                  |END OF CONSTRUCTION                                 
+|  3     |long long                          |DATA TYPE                                           
+|  4     |l                                  |VARIABLE (LONG LONG)                                
+|  5     |=                                  |ASSIGNMENT OPERATOR                                 
+|  6     |5                                  |INTEGER                                             
+|  7     |;                                  |END OF CONSTRUCTION                                 
+|  8     |int                                |DATA TYPE                                           
+|  9     |a                                  |VARIABLE (INT)                                      
+|  10    |,                                  |COMA                                                
+|  11    |b                                  |VARIABLE (INT)                                      
+|  12    |,                                  |COMA                                                
+|  13    |c                                  |VARIABLE (INT)                                      
+|  14    |;                                  |END OF CONSTRUCTION                                 
 +----------------------------------------------------------------+

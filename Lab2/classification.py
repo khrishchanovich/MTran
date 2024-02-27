@@ -35,28 +35,22 @@ def check_match(element: str, identifiers):
 
 def classify_token(token, prev_token, next_token, token_table):
     if token in keywords:
+        token_table[token] = keywords[token]
         return keywords[token]
     elif token in standart_function:
+        token_table[token] = standart_function[token]
         return standart_function[token]
     elif token in standart_libraries:
+        token_table[token] = standart_libraries[token]
         return standart_libraries[token]
     elif token in containers:
         list_containers.append(token)
+        token_table[token] = containers[token]
         return containers[token]
     elif token in classes:
+        token_table[token] = classes[token]
         return classes[token]
     elif token in operators:
-        # if token in ('<<', '>>'):
-        #     if prev_token in ('cout', 'cin') or next_token in ('endl'):
-        #         return 'I/O OPERATOR'
-        #     elif prev_token.isdigit() or prev_token.isidentifier():
-        #         return 'BITWISE OPERATOR'
-        #     elif next_token in ('cout', 'cin'):
-        #         return 'I/O OPERATOR'
-        #     elif prev_token.isidentifier() and next_token in (' ', '<<', '>>'):
-        #         return 'I/O OPERATOR'
-        #     else:
-        #         return 'I/O OPERATOR'
         if token in ('<', '>'):
             if prev_token:
                 if prev_token in ('<<', '>>'):
@@ -66,18 +60,21 @@ def classify_token(token, prev_token, next_token, token_table):
                 token_table[token] = 'TILDA'
                 return 'TILDA'
             else:
+                token_table[token] = 'BITWISE OPERATOR'
                 return 'BITWISE OPERATOR'
         if token == '<':
             if prev_token in containers:
+                token_table[token] = 'SIGN'
                 return 'SIGN'
             else:
+                token_table[token] = 'COMPARISON OPERATOR'
                 return 'COMPARISON OPERATOR'
         if token == '>':
             if prev_token in data_types or (prev_token in token_table and token_table[prev_token] == 'CLASS'):
                 token_table[token] = 'SIGN'
-                print(token_table)
                 return 'SIGN'
             else:
+                token_table[token] = 'COMPARISON OPERATOR'
                 return 'COMPARISON OPERATOR'
         if token == '*':
             if prev_token in token_table and token_table[prev_token] == 'CLASS':
@@ -85,9 +82,11 @@ def classify_token(token, prev_token, next_token, token_table):
                 return 'CLASS POINTER'
             if len(list_data_types) != 0:
                 if next_token == '(':
+                    token_table[token] = 'ARITHMETIC OPERATOR'
                     return 'ARITHMETIC OPERATOR'
                 if prev_token == ')':
                     if next_token == '(':
+                        token_table[token] = 'ARITHMETIC OPERATOR'
                         return 'ARITHMETIC OPERATOR'
                     return 'ARITHMETIC OPERATOR'
                 if ((prev_token in token_table and f'VARIABLE ({list_data_types[-1].upper()})' in token_table[
@@ -143,29 +142,37 @@ def classify_token(token, prev_token, next_token, token_table):
         return operators[token]
     elif token in data_types:
         if prev_token in ('/*', '//'):
+            token_table[token] = 'STRING OF COMMENT'
             return 'STRING OF COMMENT'
+        token_table[token] = data_types[token]
         list_data_types.append(token)
         return data_types[token]
-    # elif token not in data_types:
-    #     list_data_types.append('')
     elif token.endswith('[]'):
+        token_table[token] = 'ARRAY'
         return 'ARRAY'
     elif is_string(token):
         if prev_token == '#include':
+            token_table[token] = 'HEADER FILE'
             return 'HEADER FILE'
+        token_table[token] = 'STRING'
         return 'STRING'
     elif is_integer_type(token):
         if prev_token == '.':
             return 'LEXICAL ERROR'
+        token_table[token] = 'INTEGER'
         return 'INTEGER'
     elif is_float_type(token):
+        token_table[token] = 'FLOAT'
         return 'FLOAT'
     elif is_bool(token):
+        token_table[token] = 'BOOLEAN'
         return 'BOOLEAN'
     elif is_character_type(token):
+        token_table[token] = 'CHAR'
         return 'CHAR'
     elif token.isidentifier():
         if prev_token in ('/*', '//'):
+            token_table[token] = 'STRING OF COMMENT'
             return 'STRING OF COMMENT'
         if not all(char in allowed_symbols for char in token):
             if token[0].isdigit():
@@ -179,15 +186,19 @@ def classify_token(token, prev_token, next_token, token_table):
             return 'LEXICAL ERROR! Identifier cannot start with a digit.'
         if token in token_table:
             if next_token == '(' and token_table[token] == 'CLASS':
+                token_table[token] = 'CONSTRUCTURE'
                 return 'CONSTUCTURE'
             return token_table[token]
         else:
             if prev_token == '#define':
                 token_table[token] = 'VARIABLE'
+                token_table[token] = 'VARIABLE'
                 return 'VARIABLE'
             if prev_token == '~' and next_token == '(':
+                token_table[token] = 'DESCTRUCTURE'
                 return 'DESCTRUCTURE'
             if prev_token == '::':
+                token_table[token] = 'METHOD'
                 return 'METHOD'
             if prev_token == '>' and (prev_token in token_table and token_table[prev_token] == 'SIGN'):
                 if len(list_containers) != 0:
@@ -252,45 +263,51 @@ def classify_token(token, prev_token, next_token, token_table):
                 token_table[token] = f'OBJECT OF {prev_token}'
                 return f'OBJECT OF {prev_token}'
             elif prev_token == '.':
+                token_table[token] = 'METHOD'
                 return 'METHOD'
             else:
                 match = check_match(token, token_table.items())
-                # if prev_token in token_table and token_table[prev_token] == 'SIMILAR':
-                #     token_table[token] = 'IDENTIFIER'
-                #     return 'IDENTIFIER'
                 if match:
                     token_table[token] = 'SIMILAR'
-
                     return f'LEXICAL ERROR! SIMILAR TO: {match}'
                 else:
                     return f'UNRECOGNIZED IDENTIFIER'
     else:
         if prev_token in ('/*', '//'):
+            token_table[token] = 'STRING OF COMMENT'
             return 'STRING OF COMMENT'
         elif prev_token == '#include':
+            token_table[token] = 'HEADER FILE'
             return 'HEADER FILE'
         elif prev_token == '.':
+            token_table[token] = 'METHOD'
             return 'METHOD'
         elif token.endswith(('LL', 'll', 'UL', 'ul')):
             if is_integer_type(token[:-2]):
+                token_table[token] = 'INTEGER'
                 return 'INTEGER'
             elif is_float_type(token[:-2]):
+                token_table[token] = 'FLOAT'
                 return 'FLOAT'
             else:
                 token_table[token] = 'UNRECOGNIZED IDENTIFIER'
                 return 'UNRECOGNIZED IDENTIFIER'
         elif token.endswith(('ULL', 'ull')):
             if is_integer_type(token[:-3]):
+                token_table[token] = 'INTEGER'
                 return 'INTEGER'
             elif is_float_type(token[:-3]):
+                token_table[token] = 'FLOAT'
                 return 'FLOAT'
             else:
                 token_table[token] = 'UNRECOGNIZED IDENTIFIER'
                 return 'UNRECOGNIZED IDENTIFIER'
         elif token.endswith(('L', 'l', 'F', 'f', 'D', 'd')):
             if is_integer_type(token[:-1]):
+                token_table[token] = 'INTEGER'
                 return 'INTEGER'
             elif is_float_type(token[:-1]):
+                token_table[token] = 'FLOAT'
                 return 'FLOAT'
             else:
                 if token[0].isdigit():
@@ -301,9 +318,6 @@ def classify_token(token, prev_token, next_token, token_table):
                 return 'UNRECOGNIZED IDENTIFIER'
         else:
             match = check_match(token, token_table.items())
-            # if prev_token in token_table and token_table[prev_token] == 'SIMILAR':
-            #     token_table[token] = 'IDENTIFIER'
-            #     return 'IDENTIFIER'
             if match:
                 token_table[token] = 'SIMILAR'
                 return f'LEXICAL ERROR! SIMILAR TO: {match}'
