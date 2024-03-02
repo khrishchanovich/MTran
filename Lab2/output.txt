@@ -2,18 +2,98 @@
 |   №  |  Элемент               |   Информация                   |
 +----------------------------------------------------------------+
 |  0     |int                                |DATA TYPE                                           
-|  1     |a                                  |VARIABLE (INT)                                      
-|  2     |;                                  |END OF CONSTRUCTION                                 
-|  3     |long long                          |DATA TYPE                                           
-|  4     |l                                  |VARIABLE (LONG LONG)                                
-|  5     |=                                  |ASSIGNMENT OPERATOR                                 
-|  6     |5                                  |INTEGER                                             
-|  7     |;                                  |END OF CONSTRUCTION                                 
-|  8     |int                                |DATA TYPE                                           
-|  9     |a                                  |VARIABLE (INT)                                      
-|  10    |,                                  |COMA                                                
-|  11    |b                                  |VARIABLE (INT)                                      
-|  12    |,                                  |COMA                                                
-|  13    |c                                  |VARIABLE (INT)                                      
-|  14    |;                                  |END OF CONSTRUCTION                                 
+|  1     |main                               |FUNCTION (INT)                                      
+|  2     |(                                  |PARENTHESIS                                         
+|  3     |)                                  |PARENTHESIS                                         
+|  4     |{                                  |PARENTHESIS                                         
+|  5     |Rectangle                          |UNRECOGNIZED IDENTIFIER                             
+|  6     |rect                               |SIMILAR                                             
+|  7     |(                                  |PARENTHESIS                                         
+|  8     |5                                  |INTEGER                                             
+|  9     |,                                  |COMA                                                
+|  10    |3                                  |INTEGER                                             
+|  11    |)                                  |PARENTHESIS                                         
+|  12    |;                                  |END OF CONSTRUCTION                                 
+|  13    |std                                |NAMESPACE                                           
+|  14    |::                                 |DOUBLE COLON                                        
+|  15    |cout                               |OUTPUT                                              
+|  16    |<<                                 |OPERATOR                                            
+|  17    |"Width: "                          |STRING                                              
+|  18    |<<                                 |OPERATOR                                            
+|  19    |rect                               |SIMILAR                                             
+|  20    |.                                  |OPERATOR                                            
+|  21    |getWidth                           |METHOD                                              
+|  22    |(                                  |PARENTHESIS                                         
+|  23    |)                                  |PARENTHESIS                                         
+|  24    |<<                                 |OPERATOR                                            
+|  25    |std                                |NAMESPACE                                           
+|  26    |::                                 |DOUBLE COLON                                        
+|  27    |endl                               |OUTPUT MANIPULATOR                                  
+|  28    |;                                  |END OF CONSTRUCTION                                 
+|  29    |std                                |NAMESPACE                                           
+|  30    |::                                 |DOUBLE COLON                                        
+|  31    |cout                               |OUTPUT                                              
+|  32    |<<                                 |OPERATOR                                            
+|  33    |"Height: "                         |STRING                                              
+|  34    |<<                                 |OPERATOR                                            
+|  35    |rect                               |SIMILAR                                             
+|  36    |.                                  |OPERATOR                                            
+|  37    |getHeight                          |METHOD                                              
+|  38    |(                                  |PARENTHESIS                                         
+|  39    |)                                  |PARENTHESIS                                         
+|  40    |<<                                 |OPERATOR                                            
+|  41    |std                                |NAMESPACE                                           
+|  42    |::                                 |DOUBLE COLON                                        
+|  43    |endl                               |OUTPUT MANIPULATOR                                  
+|  44    |;                                  |END OF CONSTRUCTION                                 
+|  45    |std                                |NAMESPACE                                           
+|  46    |::                                 |DOUBLE COLON                                        
+|  47    |cout                               |OUTPUT                                              
+|  48    |<<                                 |OPERATOR                                            
+|  49    |"Area of the rectangle: "            |STRING                                              
+|  50    |<<                                 |OPERATOR                                            
+|  51    |rect                               |SIMILAR                                             
+|  52    |.                                  |OPERATOR                                            
+|  53    |area                               |METHOD                                              
+|  54    |(                                  |PARENTHESIS                                         
+|  55    |)                                  |PARENTHESIS                                         
+|  56    |<<                                 |OPERATOR                                            
+|  57    |std                                |NAMESPACE                                           
+|  58    |::                                 |DOUBLE COLON                                        
+|  59    |endl                               |OUTPUT MANIPULATOR                                  
+|  60    |;                                  |END OF CONSTRUCTION                                 
+|  61    |rect                               |SIMILAR                                             
+|  62    |.                                  |OPERATOR                                            
+|  63    |setWidth                           |METHOD                                              
+|  64    |(                                  |PARENTHESIS                                         
+|  65    |7                                  |INTEGER                                             
+|  66    |)                                  |PARENTHESIS                                         
+|  67    |;                                  |END OF CONSTRUCTION                                 
+|  68    |rect                               |SIMILAR                                             
+|  69    |.                                  |OPERATOR                                            
+|  70    |setHeight                          |METHOD                                              
+|  71    |(                                  |PARENTHESIS                                         
+|  72    |4                                  |INTEGER                                             
+|  73    |)                                  |PARENTHESIS                                         
+|  74    |;                                  |END OF CONSTRUCTION                                 
+|  75    |std                                |NAMESPACE                                           
+|  76    |::                                 |DOUBLE COLON                                        
+|  77    |cout                               |OUTPUT                                              
+|  78    |<<                                 |OPERATOR                                            
+|  79    |"Updated area of the rectangle: "            |STRING                                              
+|  80    |<<                                 |OPERATOR                                            
+|  81    |rect                               |SIMILAR                                             
+|  82    |.                                  |OPERATOR                                            
+|  83    |area                               |METHOD                                              
+|  84    |(                                  |PARENTHESIS                                         
+|  85    |)                                  |PARENTHESIS                                         
+|  86    |<<                                 |OPERATOR                                            
+|  87    |std                                |NAMESPACE                                           
+|  88    |::                                 |DOUBLE COLON                                        
+|  89    |endl                               |OUTPUT MANIPULATOR                                  
+|  90    |;                                  |END OF CONSTRUCTION                                 
+|  91    |return                             |KEYWORD                                             
+|  92    |0                                  |INTEGER                                             
+|  93    |;                                  |END OF CONSTRUCTION                                 
+|  94    |}                                  |PARENTHESIS                                         
 +----------------------------------------------------------------+

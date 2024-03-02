@@ -7,6 +7,9 @@ list_containers = []
 lexical_error_tokens = []
 allowed_symbols = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_1234567890'
 
+table_identifier = []
+table_key_words = []
+table_operators = []
 
 def check_match(element: str, identifiers):
     ident = [iden[0] for iden in identifiers]
@@ -36,6 +39,7 @@ def check_match(element: str, identifiers):
 def classify_token(token, prev_token, next_token, token_table):
     if token in keywords:
         token_table[token] = keywords[token]
+        table_key_words.append(token)
         return keywords[token]
     elif token in standart_function:
         token_table[token] = standart_function[token]
@@ -51,6 +55,7 @@ def classify_token(token, prev_token, next_token, token_table):
         token_table[token] = classes[token]
         return classes[token]
     elif token in operators:
+        table_operators.append(token)
         if token in ('<', '>'):
             if prev_token:
                 if prev_token in ('<<', '>>'):
@@ -145,6 +150,7 @@ def classify_token(token, prev_token, next_token, token_table):
             token_table[token] = 'STRING OF COMMENT'
             return 'STRING OF COMMENT'
         token_table[token] = data_types[token]
+
         list_data_types.append(token)
         return data_types[token]
     elif token.endswith('[]'):
@@ -171,6 +177,7 @@ def classify_token(token, prev_token, next_token, token_table):
         token_table[token] = 'CHAR'
         return 'CHAR'
     elif token.isidentifier():
+        table_identifier.append(token)
         if prev_token in ('/*', '//'):
             token_table[token] = 'STRING OF COMMENT'
             return 'STRING OF COMMENT'
@@ -186,7 +193,7 @@ def classify_token(token, prev_token, next_token, token_table):
             return 'LEXICAL ERROR! Identifier cannot start with a digit.'
         if token in token_table:
             if next_token == '(' and token_table[token] == 'CLASS':
-                token_table[token] = 'CONSTRUCTURE'
+                # token_table[token] = 'CONSTRUCTURE'
                 return 'CONSTUCTURE'
             return token_table[token]
         else:
@@ -195,7 +202,7 @@ def classify_token(token, prev_token, next_token, token_table):
                 token_table[token] = 'VARIABLE'
                 return 'VARIABLE'
             if prev_token == '~' and next_token == '(':
-                token_table[token] = 'DESCTRUCTURE'
+                # token_table[token] = 'DESCTRUCTURE'
                 return 'DESCTRUCTURE'
             if prev_token == '::':
                 token_table[token] = 'METHOD'
