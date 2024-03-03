@@ -67,8 +67,10 @@ def lexer():
     if not balance_errors:
         print("SYNTAX ERROR")
     else:
+        scaning_list = tokenize(code)
 
-        tokens = tokenize(code)
+        tokens = [token for token, _ in scaning_list]
+        token_lines = [line for _, line in scaning_list]
         token_table = {}
         for i, token in enumerate(tokens):
             classification = classify_token(token, tokens[i - 1] if i > 0 else None,
@@ -76,8 +78,7 @@ def lexer():
 
             table[token] = classification
 
-
-            token_classification_list.append((token, classification))
+            token_classification_list.append((token, classification, token_lines[i]))
             #print(token, classification)
         output = ''
         output += "+----------------------------------------------------------------+\n"
@@ -86,10 +87,9 @@ def lexer():
         for i, token in enumerate(tokens):
             classification = classify_token(token, tokens[i - 1] if i > 0 else None,
                                          tokens[i + 1] if i < len(tokens) - 1 else None, token_table)
-            output += f"|  {i:<3}   |{token:<23}            |{classification:<30}                      \n"
+            output += f"|  {token_lines[i]:<3}   |{token:<23}            |{classification:<30}                      \n"
         output += "+----------------------------------------------------------------+\n"
 
-        #print(token_table)
         write_output_to_file(output, file_path_output)
 
     return token_classification_list

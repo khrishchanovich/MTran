@@ -1,0 +1,115 @@
+|- ProgramType: Program
+    |- PreprocessorDirective: #include
+        |- Header file: <iostream>
+    |- Function: int main
+        |- Parameters: Parameters
+        |- Block: Block
+            |- Declare array: int arr[]
+                |- Assignment: =
+                |- Block: Block
+                    |- Value: 64
+                    |- Comma: ,
+                    |- Value: 25
+                    |- Comma: ,
+                    |- Value: 12
+                    |- Comma: ,
+                    |- Value: 22
+                    |- Comma: ,
+                    |- Value: 11
+            |- Statement: ;
+            |- Declare: int n
+                |- Assignment: =
+                |- DotOperator: .
+                |- Method: size
+                    |- Parameters: Parameters
+            |- Statement: ;
+            |- ForLoop: for
+                |- Parameters: Parameters
+                    |- Declare: int i
+                        |- Assignment: =
+                        |- Value: 0
+                    |- Statement: ;
+                    |- Variable: i
+                        |- Comparison: <
+                        |- Variable: n
+                            |- ArithmeticOperator: -
+                            |- Value: 1
+                    |- Statement: ;
+                    |- Variable: i
+                |- Block: Block
+                    |- ForLoop: for
+                        |- Parameters: Parameters
+                            |- Declare: int j
+                                |- Assignment: =
+                                |- Value: 0
+                            |- Statement: ;
+                            |- Variable: j
+                                |- Comparison: <
+                                |- Variable: n
+                                    |- ArithmeticOperator: -
+                                    |- Variable: i
+                                        |- ArithmeticOperator: -
+                                        |- Value: 1
+                            |- Statement: ;
+                            |- Variable: j
+                        |- Block: Block
+                            |- IfStatement: if
+                                |- Parameters: Parameters
+                                    |- Array: arr[]
+                                        |- Variable: j
+                                            |- Comparison: >
+                                            |- Array: arr[]
+                                                |- Variable: j
+                                                    |- ArithmeticOperator: +
+                                                    |- Value: 1
+                                |- Block: Block
+                                    |- StdNamespace: std
+                                        |- Colon: ::
+                                            |- Method: swap
+                                                |- Parameters: Parameters
+                                                    |- Array: arr[]
+                                                        |- Variable: j
+                                                        |- Comma: ,
+                                                        |- Array: arr[]
+                                                            |- Variable: j
+                                                                |- ArithmeticOperator: +
+                                                                |- Value: 1
+                                    |- Statement: ;
+            |- StdNamespace: std
+                |- Colon: ::
+                    |- Method: cout
+                    |- Operator Input: <<
+                        |- Value: "Sorted array: "
+            |- Statement: ;
+            |- ForLoop: for
+                |- Parameters: Parameters
+                    |- Declare: int i
+                        |- Assignment: =
+                        |- Value: 0
+                    |- Statement: ;
+                    |- Variable: i
+                        |- Comparison: <
+                        |- Variable: n
+                    |- Statement: ;
+                    |- Variable: i
+                |- Block: Block
+                    |- StdNamespace: std
+                        |- Colon: ::
+                            |- Method: cout
+                            |- Operator Input: <<
+                                |- Array: arr[]
+                                    |- Variable: i
+                                        |- Operator Input: <<
+                                            |- Value: " "
+                                |- Statement: ;
+                    |- Statement: ;
+            |- StdNamespace: std
+                |- Colon: ::
+                    |- Method: cout
+                    |- Operator Input: <<
+                        |- StdNamespace: std
+                            |- Colon: ::
+                                |- Method: endl
+            |- Statement: ;
+            |- ReturnStatement: return
+                |- Value: 0

@@ -22,16 +22,10 @@ keywords = {
     'private': 'KEYWORD',
     'public': 'KEYWORD',
     'protected': 'KEYWORD',
-    '(': 'PARENTHESIS',
-    ')': 'PARENTHESIS',
-    '{': 'PARENTHESIS',
-    '}': 'PARENTHESIS',
-    '[': 'PARENTHESIS',
-    ']': 'PARENTHESIS',
     ',': 'COMA',
     ';': 'END OF CONSTRUCTION',
-    'cout': 'OUTPUT',
-    'endl': 'OUTPUT MANIPULATOR',
+    'cout': 'KEYWORD',
+    'endl': 'KEYWORD',
     'class': 'KEYWORD',
     'struct': 'KEYWORD',
     'const': 'KEYWORD',
@@ -57,7 +51,18 @@ keywords = {
     'try': 'KEYWORD',
     'catch': 'KEYWORD',
     'exception': 'KEYWORD',
-    'setlocale': 'KEYWORD'
+    'setlocale': 'KEYWORD',
+    'cin': 'KEYWORD',
+
+}
+
+parenthesis = {
+    '(': 'PARENTHESIS',
+    ')': 'PARENTHESIS',
+    '{': 'PARENTHESIS',
+    '}': 'PARENTHESIS',
+    '[': 'PARENTHESIS',
+    ']': 'PARENTHESIS',
 }
 
 operators = {
