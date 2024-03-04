@@ -2,7 +2,7 @@ import itertools
 
 from function import write_output_to_file
 from main import lexer
-from constants import data_types, keywords, standart_libraries
+from constants import data_types, keywords, standart_libraries, operators
 import re
 
 pattern = r'\((.*?)\)'
@@ -241,7 +241,7 @@ def build_syntax_tree(tokens):
             current_comment += token + " "
             continue
 
-        if 'VARIABLE' in token_type or 'POINTER' in token_type:
+        if 'VARIABLE' in token_type or 'POINTER' in token_type or 'ARRAY' in token_type:
             match = re.search(pattern, token_type)
             if match:
                 if len(data_stack) != 0:
@@ -265,17 +265,17 @@ def build_syntax_tree(tokens):
                 current_node = variable_node
                 parent_node = current_node.parent
 
-                semicolon_present = False  # Reset semicolon_present flag for each variable declaration
+                semicolon_present = False
                 for tok, _, ln in tokens:
                     if ln == line and tok == ";" and parent_node.type in (
                             'ProgramType', 'Block', 'Declare', 'AccessModifier', 'ReturnStatement') or parent_node.type in (
-                            'Parameters', 'Function', 'Colon', 'Variable', 'Operator Input'):
+                            'Parameters', 'Function', 'Colon', 'Variable', 'Operator Input', 'Array'):
                         semicolon_present = True
                         break
 
                 if not semicolon_present:
-                    syntax_error_node = Node(f"Syntax error: Semicolon missing after variable declaration.",
-                                             f'Syntax error! {line}')
+                    syntax_error_node = Node(f"Semicolon missing after variable declaration.",
+                                             f'Syntax error!')
                     current_node.add_child(syntax_error_node)
                     break
 
@@ -286,7 +286,7 @@ def build_syntax_tree(tokens):
                 current_node = variable_node
                 parent_node = current_node.parent
 
-                semicolon_present = False  # Reset semicolon_present flag for each variable declaration
+                semicolon_present = False
                 for tok, _, ln in tokens:
                     if ln == line and tok == ";" and parent_node.type in (
                             'ProgramType', 'Block', 'Declare', 'AccessModifier') or parent_node.type in (
@@ -295,8 +295,8 @@ def build_syntax_tree(tokens):
                         break
 
                 if not semicolon_present:
-                    syntax_error_node = Node(f"Syntax error: Semicolon missing after variable declaration.",
-                                             f'Syntax error! {line}')
+                    syntax_error_node = Node(f"Semicolon missing after variable declaration.",
+                                             f'Syntax error!')
                     current_node.add_child(syntax_error_node)
                     break
 
@@ -332,20 +332,19 @@ def build_syntax_tree(tokens):
                         parent_node = current_node.parent
 
                         # semicolon_present = False
-                        for tok, _, ln in tokens:
-                            if ln == line and tok == ";" and parent_node.type in (
-                            'ProgramType', 'Block') or parent_node.type in (
-                            'Parameters', 'Variable', 'AccessModifier', 'Declare', 'Function'):
-                                semicolon_present = True
-                                break
-
-                        if not semicolon_present:
-                            syntax_error_node = Node(f"Syntax error: Semicolon missing after variable declaration.",
-                                                     f'Syntax error! {line}')
-                            current_node.add_child(syntax_error_node)
-                            break
-
-                        # is_array_declaration = False
+                        # for tok, _, ln in tokens:
+                        #     if ln == line and tok == ";" and parent_node.type in (
+                        #     'ProgramType', 'Block') or parent_node.type in (
+                        #     'Parameters', 'Variable', 'AccessModifier', 'Declare', 'Function', 'Declare array'):
+                        #         semicolon_present = True
+                        #
+                        #
+                        # if not semicolon_present:
+                        #     syntax_error_node = Node(f"Syntax error: Semicolon missing after variable declaration.",
+                        #                              f'Syntax error! {line}')
+                        #     current_node.add_child(syntax_error_node)
+                        #     exit()
+                        is_array_declaration = False
                         tok_list.clear()
                         break
                     if is_string_declaration:
@@ -449,6 +448,7 @@ def build_syntax_tree(tokens):
                 parent_node = current_node.parent
                 num_values = 0
                 num_commas = 0
+                tok_list = []
                 if parent_node.type == 'Declare array':
                     for inner_token, _, line in tokens:
                         tok_list.append(inner_token)
@@ -458,7 +458,7 @@ def build_syntax_tree(tokens):
                         num_commas = len(re.findall(commas, array_in))
 
                     if num_commas >= num_values or (num_values - num_commas) >= 2:
-                        syntax_error_node = Node(token, f'Syntax error! In line {line}')
+                        syntax_error_node = Node('Missing comma', f'Syntax error!')
                         current_node.add_child(syntax_error_node)
                         break
                 # if parent_node.type in ('ProgramType', 'Parenthis', 'Block'):
@@ -566,13 +566,13 @@ def build_syntax_tree(tokens):
         if token == ";":
             if len(variable_stack) != 0:
                 sum = 0
-            for i in variable_stack:
-                if current_node.type in ('Variable', 'Declare', 'ReturnStatement', 'Declare array', 'Array'):
-                    sum += 1
-            if sum > 0:
-                while sum != 0:
-                    current_node = variable_stack.pop()
-                    sum -= 1
+                for i in variable_stack:
+                    if current_node.type in ('Variable', 'Declare', 'ReturnStatement', 'Declare array', 'Array'):
+                        sum += 1
+                if sum > 0:
+                    while sum != 0:
+                        current_node = variable_stack.pop()
+                        sum -= 1
 
             if len(std_stack) != 0:
                 current_node = std_stack.pop()
@@ -726,8 +726,8 @@ def build_syntax_tree(tokens):
             current_node = io_operator_node
             # current_node.add_child(io_operator_node)
 
-        if token in ('+', '*', '-', '/', '%') and token_type == 'ARITHMETIC OPERATOR':
-            arithmetic_operator_node = Node(token, "ArithmeticOperator")
+        if token in operators and token_type == 'ARITHMETIC OPERATOR':
+            arithmetic_operator_node = Node(token, "Operator")
             current_node.add_child(arithmetic_operator_node)
 
         if token == "for" and token_type == 'KEYWORD':
@@ -812,7 +812,7 @@ def build_syntax_tree(tokens):
             break
 
         if 'SYNTAX ERROR' in token_type:
-            syntax_error_node = Node(token, f'{token_type} In line {line}')
+            syntax_error_node = Node(token, token_type)
             current_node.add_child(syntax_error_node)
             break
         # else:

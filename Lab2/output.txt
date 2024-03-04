@@ -3,16 +3,15 @@
 +----------------------------------------------------------------+
 |  1     |#include                           |PREPROCESSOR DIRECTIVE                              
 |  1     |<iostream>                         |HEADER FILE                                         
-|  2     |#include                           |PREPROCESSOR DIRECTIVE                              
-|  2     |<vector>                           |HEADER FILE                                         
 |  3     |int                                |DATA TYPE                                           
 |  3     |main                               |FUNCTION CALL                                       
 |  3     |(                                  |PARENTHESIS                                         
 |  3     |)                                  |PARENTHESIS                                         
 |  3     |{                                  |PARENTHESIS                                         
 |  4     |int                                |DATA TYPE                                           
-|  4     |*                                  |ASTERIK                                             
-|  4     |arr                                |POINTER (INT)                                       
+|  4     |arr                                |ARRAY (int)                                         
+|  4     |[                                  |PARENTHESIS                                         
+|  4     |]                                  |PARENTHESIS                                         
 |  4     |=                                  |ASSIGNMENT OPERATOR                                 
 |  4     |{                                  |PARENTHESIS                                         
 |  4     |64                                 |INTEGER                                             
@@ -30,7 +29,7 @@
 |  5     |*                                  |ASTERIK                                             
 |  5     |n                                  |POINTER (INT)                                       
 |  5     |=                                  |ASSIGNMENT OPERATOR                                 
-|  5     |arr                                |POINTER (INT)                                       
+|  5     |arr                                |ARRAY (int)                                         
 |  5     |.                                  |OPERATOR                                            
 |  5     |size                               |METHOD                                              
 |  5     |(                                  |PARENTHESIS                                         
@@ -42,7 +41,6 @@
 |  6     |i                                  |VARIABLE (INT)                                      
 |  6     |=                                  |ASSIGNMENT OPERATOR                                 
 |  6     |0                                  |INTEGER                                             
-|  6     |;                                  |END OF CONSTRUCTION                                 
 |  6     |i                                  |VARIABLE (INT)                                      
 |  6     |<                                  |COMPARISON OPERATOR                                 
 |  6     |n                                  |POINTER (INT)                                       
@@ -74,12 +72,12 @@
 |  7     |{                                  |PARENTHESIS                                         
 |  8     |if                                 |KEYWORD                                             
 |  8     |(                                  |PARENTHESIS                                         
-|  8     |arr                                |POINTER (INT)                                       
+|  8     |arr                                |ARRAY (int)                                         
 |  8     |[                                  |PARENTHESIS                                         
 |  8     |j                                  |VARIABLE (INT)                                      
 |  8     |]                                  |PARENTHESIS                                         
 |  8     |>                                  |COMPARISON OPERATOR                                 
-|  8     |arr                                |POINTER (INT)                                       
+|  8     |arr                                |ARRAY (int)                                         
 |  8     |[                                  |PARENTHESIS                                         
 |  8     |j                                  |VARIABLE (INT)                                      
 |  8     |+                                  |ARITHMETIC OPERATOR                                 
@@ -91,12 +89,12 @@
 |  9     |::                                 |DOUBLE COLON                                        
 |  9     |swap                               |METHOD                                              
 |  9     |(                                  |PARENTHESIS                                         
-|  9     |arr                                |POINTER (INT)                                       
+|  9     |arr                                |ARRAY (int)                                         
 |  9     |[                                  |PARENTHESIS                                         
 |  9     |j                                  |VARIABLE (INT)                                      
 |  9     |]                                  |PARENTHESIS                                         
 |  9     |,                                  |COMA                                                
-|  9     |arr                                |POINTER (INT)                                       
+|  9     |arr                                |ARRAY (int)                                         
 |  9     |[                                  |PARENTHESIS                                         
 |  9     |j                                  |VARIABLE (INT)                                      
 |  9     |+                                  |ARITHMETIC OPERATOR                                 
@@ -112,6 +110,10 @@
 |  13    |cout                               |KEYWORD                                             
 |  13    |<<                                 |OPERATOR                                            
 |  13    |"Sorted array: "                   |STRING                                              
+|  13    |<<                                 |OPERATOR                                            
+|  13    |std                                |NAMESPACE                                           
+|  13    |::                                 |DOUBLE COLON                                        
+|  13    |endl                               |KEYWORD                                             
 |  13    |;                                  |END OF CONSTRUCTION                                 
 |  14    |for                                |KEYWORD                                             
 |  14    |(                                  |PARENTHESIS                                         
@@ -132,7 +134,7 @@
 |  15    |::                                 |DOUBLE COLON                                        
 |  15    |cout                               |KEYWORD                                             
 |  15    |<<                                 |OPERATOR                                            
-|  15    |arr                                |POINTER (INT)                                       
+|  15    |arr                                |ARRAY (int)                                         
 |  15    |[                                  |PARENTHESIS                                         
 |  15    |i                                  |VARIABLE (INT)                                      
 |  15    |]                                  |PARENTHESIS                                         

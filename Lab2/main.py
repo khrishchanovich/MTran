@@ -6,8 +6,10 @@ from function import read_code_from_file, write_output_to_file
 file_path_input = 'test.cpp'
 file_path_output = 'output.txt'
 
+errors = {'missing': [], 'extra': []}
 
 def balance_check(code):
+
     double_quotes_count = 0
     single_quotes_count = 0
     parentheses_count = 0
@@ -52,9 +54,21 @@ def balance_check(code):
             parentheses_count == 0 and
             curly_braces_count == 0 and
             comment_open_count == comment_close_count):
-        return True
+        return True, errors
     else:
+        if double_quotes_count % 2 != 0:
+            errors['missing'].append('"')
+        if single_quotes_count % 2 != 0:
+            errors['missing'].append("'")
+        if parentheses_count != 0:
+            errors['missing'].append(')')
+        if curly_braces_count != 0:
+            errors['missing'].append('}')
+        if comment_open_count != comment_close_count:
+            errors['missing'].append('*/' if comment_open_count < comment_close_count else '/*')
+
         return False
+
 
 def lexer():
     code = read_code_from_file(file_path_input)
@@ -65,7 +79,10 @@ def lexer():
 
     balance_errors = balance_check(code)
     if not balance_errors:
-        print("SYNTAX ERROR")
+        errors_message = ", ".join([f"Missing {error}" for error in errors['missing']])
+        errors_message += ", " if errors_message and errors['extra'] else ""
+        errors_message += ", ".join([f"Extra {error}" for error in errors['extra']])
+        print(f"SYNTAX ERROR! {errors_message}")
     else:
         scaning_list = tokenize(code)
 
