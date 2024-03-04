@@ -201,19 +201,18 @@ def build_syntax_tree(tokens):
     io_stack = []
     if_stack = []
     return_stack = []
-    array_values = ''
-    # num_values = 0
-    # num_commas = 0
-    array_in = []
+    class_stack = []
+    # array_values = ''
+    # # num_values = 0
+    # # num_commas = 0
+    # array_in = []
     std_stack = []
     for_stack = []
 
-    tok_list = []
 
     is_string_declaration = False
     is_value = False
     inside_comment = False
-    semicolon_present = False
     is_array_declaration = False
 
     array_name = None
@@ -244,14 +243,13 @@ def build_syntax_tree(tokens):
 
         if 'VARIABLE' in token_type or 'POINTER' in token_type:
             match = re.search(pattern, token_type)
-            print(token_type)
-            print(match)
             if match:
                 if len(data_stack) != 0:
                     data_type = match.group(1)
                     if data_type == 'STRING':
                         is_string_declaration = True
                     variable_node = Node(token, 'Declare', data_type.lower())
+                    data_stack.pop()
                     is_value = True
                 else:
                     is_string_declaration = False
@@ -267,11 +265,11 @@ def build_syntax_tree(tokens):
                 current_node = variable_node
                 parent_node = current_node.parent
 
-                # semicolon_present = False  # Reset semicolon_present flag for each variable declaration
+                semicolon_present = False  # Reset semicolon_present flag for each variable declaration
                 for tok, _, ln in tokens:
                     if ln == line and tok == ";" and parent_node.type in (
-                            'ProgramType', 'Block') or parent_node.type in (
-                            'Parameters', 'Variable', 'AccessModifier', 'Declare', 'Function'):
+                            'ProgramType', 'Block', 'Declare', 'AccessModifier', 'ReturnStatement') or parent_node.type in (
+                            'Parameters', 'Function', 'Colon', 'Variable', 'Operator Input'):
                         semicolon_present = True
                         break
 
@@ -280,6 +278,7 @@ def build_syntax_tree(tokens):
                                              f'Syntax error! {line}')
                     current_node.add_child(syntax_error_node)
                     break
+
             else:
                 variable_node = Node(token, 'Variable', None)
                 variable_stack.append(current_node)
@@ -287,11 +286,11 @@ def build_syntax_tree(tokens):
                 current_node = variable_node
                 parent_node = current_node.parent
 
-                # semicolon_present = False  # Reset semicolon_present flag for each variable declaration
+                semicolon_present = False  # Reset semicolon_present flag for each variable declaration
                 for tok, _, ln in tokens:
                     if ln == line and tok == ";" and parent_node.type in (
-                            'ProgramType', 'Block') or parent_node.type in (
-                            'Parameters', 'Variable', 'AccessModifier', 'Declare', 'Function'):
+                            'ProgramType', 'Block', 'Declare', 'AccessModifier') or parent_node.type in (
+                            'Parameters', 'Function', 'ForLoop',  'Variable', 'Operator Input'):
                         semicolon_present = True
                         break
 
@@ -314,6 +313,7 @@ def build_syntax_tree(tokens):
                 print('Error')
 
         if token == '[':
+            tok_list = []
             for inner_token, _, line in tokens:
                 tok_list.append(inner_token)
                 array_in = find_chars_between(tok_list, '[', ']')
@@ -376,6 +376,7 @@ def build_syntax_tree(tokens):
         if token_type == "CLASS":
             parent_node = current_node
             class_node = ClassNode(token, "Class")
+            class_stack.append(current_node)
             current_node.add_child(class_node)
             current_node = class_node
 
@@ -407,7 +408,7 @@ def build_syntax_tree(tokens):
             current_node = object_node
 
         if token_type == 'METHOD':
-            method_node = Node(token, 'Method')
+            method_node = Node(token, 'Method f')
             param_stack.append(current_node)
             current_node.add_child(method_node)
             current_node = method_node
@@ -451,6 +452,7 @@ def build_syntax_tree(tokens):
                 if parent_node.type == 'Declare array':
                     for inner_token, _, line in tokens:
                         tok_list.append(inner_token)
+
                         array_in = find_chars_between(tok_list, '{', '}')
                         num_values = len(re.findall(numbers, array_in))
                         num_commas = len(re.findall(commas, array_in))
@@ -459,12 +461,9 @@ def build_syntax_tree(tokens):
                         syntax_error_node = Node(token, f'Syntax error! In line {line}')
                         current_node.add_child(syntax_error_node)
                         break
+                # if parent_node.type in ('ProgramType', 'Parenthis', 'Block'):
+                #     for inner_token, _, line in tokens:
 
-                        # array_values = array_in.split('=')[1]
-                        # # Подсчитываем количество элементов и запятых
-                        # num_values = len(array_values.split(','))
-                        # num_commas = array_values.count(',')
-                        # print(array_values)
 
         elif token == "}":
             current_node = branch_stack.pop()
@@ -476,7 +475,7 @@ def build_syntax_tree(tokens):
                 current_node = if_stack.pop()
 
         if token == "(":
-            if current_node.type == "Function" or current_node.type == 'Function Call' or current_node.type == 'ForLoop' or current_node.type == 'Method' or current_node.type == 'Object' or current_node.type == 'Constructure' or current_node.type == "ProgramType" or current_node.type == "WhileLoop" or current_node.type == "IfStatement":
+            if current_node.type == "Function" or current_node.type == 'Function Call' or current_node.type == 'ForLoop' or current_node.type == 'Method f' or current_node.type == 'Object' or current_node.type == 'Constructure' or current_node.type == "ProgramType" or current_node.type == "WhileLoop" or current_node.type == "IfStatement":
                 parameters_list_node = Node("Parameters", "Parameters")
                 param_stack.append(current_node)
                 current_node.add_child(parameters_list_node)
@@ -485,6 +484,7 @@ def build_syntax_tree(tokens):
                 if current_node.type == 'Parameters':
                     parent_node = current_node.parent
                     num_semicolon = 0
+                    tok_list = []
                     if parent_node.type == 'ForLoop':
                         for inner_token, _, line in tokens:
                             tok_list.append(inner_token)
@@ -499,6 +499,23 @@ def build_syntax_tree(tokens):
                 bracket_stack.append(current_node)
                 current_node.add_child(bracket_list_node)
                 current_node = bracket_list_node
+
+        # if token == "(" and current_node.type == "Parameters":
+        #     parent_node = current_node.parent
+        #     sum = 0
+        #     if parent_node.type == 'ForLoop':
+        #         if current_node.type == 'Parameters':
+        #             for t, t_type, _ in tokens:
+        #                 if current_node.type == 'Block':
+        #                     break
+        #                 print(t)
+        #                 if t == ';':
+        #                     sum += 1
+        #             print(sum)
+        #             if sum % 2 != 0:
+        #                 syntax_error_node = Node(token, f'Syntax error! In line {line}')
+        #                 current_node.add_child(syntax_error_node)
+        #                 break
 
         if token == ")":
             sum = 0
@@ -516,10 +533,10 @@ def build_syntax_tree(tokens):
                 current_node.add_child(bracket_node)
             elif current_node.type == "Parameters":
                 current_node = param_stack.pop()
-                if current_node.type == 'Function Call' or current_node.type == 'Method' or current_node.type == 'Object':
+                if current_node.type == 'Function Call' or current_node.type == 'Method f' or current_node.type == 'Object':
                     current_node = param_stack.pop()
-                    if current_node.type == 'Object':
-                        current_node = param_stack.pop()
+                    # if current_node.type == 'Class':
+                    #     current_node = param_stack.pop()
 
         if token_type in ('FLOAT', 'STRING', 'INTEGER'):
             var_node = Node(token, 'Value')
@@ -547,7 +564,8 @@ def build_syntax_tree(tokens):
             current_node.add_child(comma_node)
 
         if token == ";":
-            sum = 0
+            if len(variable_stack) != 0:
+                sum = 0
             for i in variable_stack:
                 if current_node.type in ('Variable', 'Declare', 'ReturnStatement', 'Declare array', 'Array'):
                     sum += 1
@@ -555,18 +573,64 @@ def build_syntax_tree(tokens):
                 while sum != 0:
                     current_node = variable_stack.pop()
                     sum -= 1
-            # current_node = std_stack.pop()
+
             if len(std_stack) != 0:
                 current_node = std_stack.pop()
-            sum = 0
+            sum_std = 0
             for i in std_stack:
-                sum += 1
-            if sum > 0:
-                while sum != 0:
+                sum_std += 1
+            if sum_std > 0:
+                while sum_std != 0:
                     current_node = std_stack.pop()
-                    sum -= 1
+                    sum_std -= 1
+
+            if current_node.type == 'Class':
+                if len(class_stack) != 0:
+                    current_node = class_stack.pop()
+                sum_class = 0
+                for i in class_stack:
+                    sum_class += 1
+                if sum_class > 0:
+                    while sum_class != 0:
+                        current_node = class_stack.pop()
+                        sum_class -= 1
+
+            if current_node.type == 'Method f':
+                if len(param_stack) != 0:
+                    current_node = param_stack.pop()
+                sum_param = 0
+                for i in param_stack:
+                    sum_param += 1
+                if sum_param > 0:
+                    while sum_param != 0:
+                        current_node = param_stack.pop()
+                        sum_param -= 1
+
+            # if current_node.type == 'Object':
+            #     if len(param_stack) != 0:
+            #         current_node = param_stack.pop()
+            #         print(current_node.type)
+            #     sum_obj = 0
+            #     for i in param_stack:
+            #         sum_obj += 1
+            #     if sum_obj > 0:
+            #         while sum_obj != 0:
+            #             current_node = param_stack.pop()
+            #             sum_obj -= 1
+
+            # if len(io_stack) != 0:
+            #     current_node = io_stack.pop()
+            # sum_io = 0
+            # for i in io_stack:
+            #     sum_io += 1
+            # if sum_io > 0:
+            #     while sum_io != 0:
+            #         current_node = sum_io.pop()
+            #         sum_io -= 1
+
             statement_node = StatementNode(token, "Statement")
             current_node.add_child(statement_node)
+
             if len(data_stack) != 0:
                 data_stack.pop()
             else:
@@ -591,7 +655,7 @@ def build_syntax_tree(tokens):
                     semicolon_present = True
                     break
             if not semicolon_present:
-                syntax_error_node = Node("Syntax error: Semicolon missing after return statement",
+                syntax_error_node = Node("Syntax error: !!!Semicolon missing after return statement",
                                          f'Syntax error! {line}')
                 current_node.add_child(syntax_error_node)
                 break
@@ -609,13 +673,14 @@ def build_syntax_tree(tokens):
             parent_node = current_node
             current_node = std_node
 
+            semicolon_present = False
             for tok, _, ln in tokens:
-                if ln == line and tok == ";" and parent_node.type in ('ProgramType', 'Block'):
+                if ln == line and tok == ";" and parent_node.type in ('ProgramType', 'Block', 'Operator Input', 'Object'):
                     semicolon_present = True
                     break
 
             if not semicolon_present:
-                syntax_error_node = Node(f"Syntax error: Semicolon missing after variable declaration.",
+                syntax_error_node = Node(f"123Syntax error: Semicolon missing after variable declaration.",
                                          f'Syntax error! {line}')
                 current_node.add_child(syntax_error_node)
                 break
@@ -643,6 +708,7 @@ def build_syntax_tree(tokens):
         if token in ('cout', 'endl', 'cin') and token_type == "KEYWORD":
             method_node = Node(token, "Method")
             current_node.add_child(method_node)
+            # current_node = io_stack.pop()
             if len(io_stack) != 0:
                 current_node = io_stack.pop()
             sum = 0
@@ -724,10 +790,35 @@ def build_syntax_tree(tokens):
             current_node.add_child(syntax_error_node)
             break
 
+        if token == "break":
+            delete_node = Node(token, "Break")
+            current_node.add_child(delete_node)
+        elif token == 'break' and token_type != 'KEYWORD':
+            syntax_error_node = Node(token, f'Syntax error! In line {line}')
+            current_node.add_child(syntax_error_node)
+            break
+
+        if token == "continue":
+            delete_node = Node(token, "Continue")
+            current_node.add_child(delete_node)
+        elif token == 'continue' and token_type != 'KEYWORD':
+            syntax_error_node = Node(token, f'Syntax error! In line {line}')
+            current_node.add_child(syntax_error_node)
+            break
+
         if 'LEXICAL ERROR' in token_type:
-            lexical_error_node = Node(token, f'Lexical error! In line {line}')
+            lexical_error_node = Node(token, f'{token_type} In line {line}')
             current_node.add_child(lexical_error_node)
             break
+
+        if 'SYNTAX ERROR' in token_type:
+            syntax_error_node = Node(token, f'{token_type} In line {line}')
+            current_node.add_child(syntax_error_node)
+            break
+        # else:
+        #     if token in keywords:
+        #         keyword_node = Node(token, token_type)
+        #         current_node.add_child(keyword_node)
 
         # else:
         #     ident_node = Node(token, 'Ident')
