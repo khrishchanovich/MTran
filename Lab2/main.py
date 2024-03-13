@@ -88,6 +88,7 @@ def lexer():
 
         tokens = [token for token, _ in scaning_list]
         token_lines = [line for _, line in scaning_list]
+
         token_table = {}
         for i, token in enumerate(tokens):
             classification = classify_token(token, tokens[i - 1] if i > 0 else None,

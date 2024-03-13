@@ -5,6 +5,7 @@ def tokenize(code):
     inside_comment = False
     line_number = 1
     char_position = 0
+    current_scope = 1
 
     i = 0
     while i < len(code):
@@ -19,7 +20,7 @@ def tokenize(code):
         if char == '\\':
             if i + 1 < len(code):
                 next_char = code[i + 1]
-                if next_char in ('r', 'n', 't', '\\'):
+                if next_char in ('r', 't', '\\'):
                     current_token += char + next_char
                     i += 1
                 else:
@@ -52,8 +53,6 @@ def tokenize(code):
                 current_token += code[i]
                 i += 1
             tokens.append((current_token.strip(), line_number))
-            # if code[i] == '\n':
-            #     line_number += 1
             current_token = ''
         elif char == '/' and i + 1 < len(code) and code[i + 1] == '*':
             if current_token:
@@ -81,15 +80,6 @@ def tokenize(code):
                 i += 1
             tokens.append((current_token, line_number))
             current_token = ''
-        elif char in ('(', ')', '{', '}', '[', ']', ',', ';', '<', '>'):
-            if current_token:
-                tokens.append((current_token, line_number))
-                current_token = ''
-            tokens.append((char, line_number))
-        elif char.isspace():
-            if current_token:
-                tokens.append((current_token, line_number))
-                current_token = ''
         elif char in ('(', ')', '{', '}', '[', ']', ',', ';', '<', '>'):
             if current_token:
                 tokens.append((current_token, line_number))
@@ -132,6 +122,19 @@ def tokenize(code):
             tokens.append((current_token[-2], line_number))
             current_token = ''
             current_token += char
+        elif char in ('+', '-'):
+            if current_token.endswith(('++', '--')):
+                tokens.append((current_token[:-2], line_number))
+                tokens.append((current_token[-2:], line_number))
+                current_token = ''
+            elif current_token:
+                tokens.append((current_token, line_number))
+                current_token = ''
+            if i + 1 < len(code) and code[i + 1] == char:
+                tokens.append((char * 2, line_number))
+                i += 1
+            else:
+                tokens.append((char, line_number))
         else:
             if current_token:
                 tokens.append((current_token, line_number))
@@ -161,6 +164,7 @@ def tokenize(code):
         elif list_tokens[i:i + 2] == ['<', '<']:
             combined_tokens.append(('<<', token_lines[i]))
             i += 2
+
         elif list_tokens[i:i + 2] == ['>', '>']:
             combined_tokens.append(('>>', token_lines[i]))
             i += 2
@@ -169,9 +173,6 @@ def tokenize(code):
             i += 2
         elif list_tokens[i:i + 2] == ['-', '>']:
             combined_tokens.append(('->', token_lines[i]))
-            i += 2
-        elif list_tokens[i:i + 2] == ['+', '+']:
-            combined_tokens.append(('++', token_lines[i]))
             i += 2
         elif list_tokens[i:i + 2] == ['-', '-']:
             combined_tokens.append(('--', token_lines[i]))

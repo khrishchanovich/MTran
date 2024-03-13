@@ -44,10 +44,10 @@ def check_comparison(token, current_node):
 
 
 class Node:
-    def __init__(self, name, node_type, date_type=None, array_in=None, parent=None, children=None):
+    def __init__(self, name, node_type, data_type=None, array_in=None, parent=None, children=None):
         self.name = name
         self.type = node_type
-        self.date_type = date_type
+        self.data_type = data_type
         self.array_in = array_in
         self.parent = parent
         self.children = children if children is not None else []
@@ -62,16 +62,17 @@ class Node:
         else:
             return None
 
+
     def display(self, level=0):
         indent = "    " * level
         tree_structure = ""
-        if self.date_type is not None and self.array_in is not None:
-            tree_structure += f"{indent}|- {self.type}: {self.date_type} {self.name}[{self.array_in}]\n"
-        if self.date_type is None and self.array_in is None:
+        if self.data_type is not None and self.array_in is not None:
+            tree_structure += f"{indent}|- {self.type}: {self.data_type} {self.name}[{self.array_in}]\n"
+        if self.data_type is None and self.array_in is None:
             tree_structure += f"{indent}|- {self.type}: {self.name}\n"
         elif self.array_in is None:
-            tree_structure += f"{indent}|- {self.type}: {self.date_type} {self.name}\n"
-        elif self.date_type is None:
+            tree_structure += f"{indent}|- {self.type}: {self.data_type} {self.name}\n"
+        elif self.data_type is None:
             tree_structure += f"{indent}|- {self.type}: {self.name}[{self.array_in}]\n"
 
         for child in self.children:
@@ -100,48 +101,16 @@ class CommentNode(Node):
         super().__init__(name, node_type)
 
 
-class ArrayNode(Node):
-    def __init__(self, data_type: None, name, array_in: []):
-        if data_type is not None:
-            super().__init__(f"{data_type} {name}[{array_in}]", "Array")
-        else:
-            super().__init__(f"{name}[{array_in}]", "Array")
-        self.data_type = data_type
-        self.name = name
-        self.size = array_in
-
-    def display(self, level=0):
-        indent = "    " * level
-        if self.data_type is not None:
-            print(f"{indent}|- Array: {self.data_type} {self.name}[{self.size}]")
-        else:
-            print(f"{indent}|- Array: {self.name}[{self.size}]")
-
-
-class VariableNode(Node):
-    def __init__(self, data_type: None, name):
-        if data_type is not None:
-            super().__init__(f"{data_type} {name}", "Declare")
-        else:
-            super().__init__(f"{name}", "Variable")
-        self.data_type = data_type
-        self.name = name
-
-
-    def display(self, level=0):
-        indent = "    " * level
-        if self.data_type:
-            print(f"{indent}|- Declare: {self.data_type} {self.name}")
-        else:
-            print(f"{indent}|- Variable: {self.name}")
-
-
 class ForNode(Node):
     def __init__(self, name, node_type):
         super().__init__(name, node_type)
 
 
 class IfNode(Node):
+    def __init__(self, name, node_type):
+        super().__init__(name, node_type)
+
+class ElseNode(Node):
     def __init__(self, name, node_type):
         super().__init__(name, node_type)
 
@@ -190,7 +159,6 @@ def build_syntax_tree(tokens):
     current_node = root
 
     function_definitions = {}
-    help_tokens = []
     branch_stack = []
     param_stack = []
     bracket_stack = []
@@ -202,13 +170,8 @@ def build_syntax_tree(tokens):
     if_stack = []
     return_stack = []
     class_stack = []
-    # array_values = ''
-    # # num_values = 0
-    # # num_commas = 0
-    # array_in = []
     std_stack = []
     for_stack = []
-
 
     is_string_declaration = False
     is_value = False
@@ -245,10 +208,16 @@ def build_syntax_tree(tokens):
             match = re.search(pattern, token_type)
             if match:
                 if len(data_stack) != 0:
+                    variable_already_exists = any(child.name == token for child in current_node.children)
+                    if variable_already_exists:
+                        semantic_error_node = Node(token,
+                                                   f'Semantic error! Variable "{token}" has already been declared.')
+                        current_node.add_child(semantic_error_node)
+                        break
                     data_type = match.group(1)
                     if data_type == 'STRING':
                         is_string_declaration = True
-                    variable_node = Node(token, 'Declare', data_type.lower())
+                    variable_node = Node(token, 'Declare', data_stack[-1].lower())
                     data_stack.pop()
                     is_value = True
                 else:
@@ -379,26 +348,32 @@ def build_syntax_tree(tokens):
             current_node.add_child(class_node)
             current_node = class_node
 
-        if 'FUNCTION DEC' in token_type:
+        if 'FUNCTION' in token_type:
             match = re.search(pattern, token_type)
             if match:
                 if len(data_stack) != 0:
+                    function_already_exists = any(child.name == token for child in current_node.children)
+                    if function_already_exists:
+                        semantic_error_node = Node(token,
+                                                   f'Semantic error! Variable "{token}" has already been declared.')
+                        current_node.add_child(semantic_error_node)
+                        break
                     data_type = match.group(1)
-                    function_node = Node(token, 'Function', data_type.lower())
+                    function_node = Node(token, 'Function', data_stack[-1].lower())
                     data_stack.pop()
                 else:
-                    function_node = Node(token, 'Function', None)
+                    function_node = Node(token, 'Function Call', None)
                 branch_stack.append(current_node)
                 current_node.add_child(function_node)
                 current_node = function_node
             else:
                 print('Error')
 
-        if token_type == 'FUNCTION CALL':
-            function_call_node = Node(token, 'Function Call')
-            param_stack.append(current_node)
-            current_node.add_child(function_call_node)
-            current_node = function_call_node
+        # if token_type == 'FUNCTION CALL':
+        #     function_call_node = Node(token, 'Function Call')
+        #     param_stack.append(current_node)
+        #     current_node.add_child(function_call_node)
+        #     current_node = function_call_node
 
         if 'OBJECT OF' in token_type:
             object_node = Node(token, 'Object')
@@ -534,16 +509,45 @@ def build_syntax_tree(tokens):
             elif current_node.type == "Parameters":
                 current_node = param_stack.pop()
                 if current_node.type == 'Function Call' or current_node.type == 'Method f' or current_node.type == 'Object':
-                    current_node = param_stack.pop()
+                    if len(param_stack) != 0:
+                        current_node = param_stack.pop()
                     # if current_node.type == 'Class':
                     #     current_node = param_stack.pop()
 
-        if token_type in ('FLOAT', 'STRING', 'INTEGER'):
+        if token_type in ('FLOAT', 'STRING', 'INTEGER', 'BOOLEAN'):
+            if current_node.data_type in ('int', 'long long', 'long', 'short', 'unsigned short', 'unsigned int', \
+                                          'unsigned long long', 'unsigned long'):
+                if token_type in ('FLOAT', 'STRING', 'BOOLEAN'):
+                    semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
+                    current_node.add_child(semantic_error_node)
+                    break
+            if current_node.data_type in ('float', 'double', 'long double'):
+                if token_type in ('STRING', 'BOOLEAN'):
+                    semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
+                    current_node.add_child(semantic_error_node)
+                    break
+            if current_node.data_type in ('signed char', 'char', 'unsigned char', 'wchar_t', 'char8_t', 'char16_t', 'char32_t'):
+                if token_type in ('FLOAT', 'INTEGER', 'BOOLEAN'):
+                    semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
+                    current_node.add_child(semantic_error_node)
+                    break
+                if token_type == 'STRING' and token.startswith('"') and len(token) > 3:
+                    semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
+                    current_node.add_child(semantic_error_node)
+                    break
+            if current_node.data_type == 'string':
+                if token_type in ('FLOAT', 'INTEGER', 'BOOLEAN'):
+                    semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
+                    current_node.add_child(semantic_error_node)
+                    break
+            if current_node.data_type == 'bool':
+                if token_type in ('FLOAT', 'INTEGER', 'STRING'):
+                    semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
+                    current_node.add_child(semantic_error_node)
+                    break
             var_node = Node(token, 'Value')
-            # if is_array_declaration:
-            #     is_array_declaration = False
-            #     continue
             current_node.add_child(var_node)
+
             if len(io_stack) != 0:
                 current_node = io_stack.pop()
             sum = 0
@@ -735,10 +739,10 @@ def build_syntax_tree(tokens):
             for_stack.append(current_node)
             current_node.add_child(for_node)
             current_node = for_node
-        elif token == 'for' and token_type != 'KEYWORD':
-            syntax_error_node = Node(token, f'Syntax error! In line {line}')
-            current_node.add_child(syntax_error_node)
-            break
+        # elif token == 'for' and token_type != 'KEYWORD':
+        #     syntax_error_node = Node(token, f'Syntax error! In line {line}')
+        #     current_node.add_child(syntax_error_node)
+        #     break
 
         if token == "if" and token_type == 'KEYWORD':
             if_node = IfNode(token, "IfStatement")
@@ -751,7 +755,7 @@ def build_syntax_tree(tokens):
             break
 
         if token == "else" and token_type == 'KEYWORD':
-            else_node = Node(token, "Else")
+            else_node = ElseNode(token, "Else")
             parent_node = current_node.parent
             if isinstance(parent_node, IfNode):
                 if_else_node = IfElseNode(token, "IfElseStatement")
@@ -815,14 +819,11 @@ def build_syntax_tree(tokens):
             syntax_error_node = Node(token, token_type)
             current_node.add_child(syntax_error_node)
             break
-        # else:
-        #     if token in keywords:
-        #         keyword_node = Node(token, token_type)
-        #         current_node.add_child(keyword_node)
 
-        # else:
-        #     ident_node = Node(token, 'Ident')
-        #     current_node.add_child(ident_node)
+        if 'SEMANTIC ERROR' in token_type:
+            semantic_error_node = Node(token, token_type)
+            current_node.add_child(semantic_error_node)
+            break
     return root
 
 

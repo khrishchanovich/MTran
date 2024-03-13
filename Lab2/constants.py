@@ -53,7 +53,7 @@ keywords = {
     'exception': 'KEYWORD',
     'setlocale': 'KEYWORD',
     'cin': 'KEYWORD',
-
+    'swap': 'METHOD'
 }
 
 parenthesis = {

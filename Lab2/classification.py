@@ -13,6 +13,8 @@ table_identifier = []
 table_key_words = []
 table_operators = []
 
+table_scope = {}
+
 pattern = r'\((.*?)\)'
 
 def check_match(element: str, identifiers):
@@ -21,7 +23,7 @@ def check_match(element: str, identifiers):
     datas = list(data_types.keys())
     conts = list(containers.keys())
 
-    base = ident + datas + keyws + conts
+    base = datas + keyws + conts
     max_match = ""
     max_count = 0
 
@@ -43,8 +45,8 @@ def check_match(element: str, identifiers):
 def classify_token(token, prev_token, next_token, token_table):
     if token in keywords:
         if prev_token in token_table and prev_token in data_types:
-            token_table[token] = 'SYNTAX ERROR!'
-            return 'SYNTAX ERROR!'
+            token_table[token] = 'SEMANTIC ERROR!'
+            return 'SEMANTIC ERROR!'
         token_table[token] = keywords[token]
         table_key_words.append(token)
         return keywords[token]
@@ -108,6 +110,8 @@ def classify_token(token, prev_token, next_token, token_table):
                 token_table[token] = 'CLASS POINTER'
                 return 'CLASS POINTER'
             if len(list_data_types) != 0:
+                data_type = list_data_types[-1]
+                list_data_types.pop()
                 if next_token == '(':
                     token_table[token] = 'ARITHMETIC OPERATOR'
                     return 'ARITHMETIC OPERATOR'
@@ -116,47 +120,46 @@ def classify_token(token, prev_token, next_token, token_table):
                         token_table[token] = 'ARITHMETIC OPERATOR'
                         return 'ARITHMETIC OPERATOR'
                     return 'ARITHMETIC OPERATOR'
-                if ((prev_token in token_table and f'VARIABLE ({list_data_types[-1].upper()})' in token_table[
+                if ((prev_token in token_table and f'VARIABLE ({data_type.upper()})' in token_table[
                     prev_token]) \
-                        or (prev_token in token_table and f'FUNCTION DEC (FOINTER {list_data_types[-1].upper()})' in
+                        or (prev_token in token_table and f'FUNCTION DEC (FOINTER {data_type.upper()})' in
                             token_table[prev_token]) \
                         or (prev_token in token_table and f'POINTER' in token_table[
                     prev_token]) \
                         or (prev_token in token_table and f'METHOD OF CLASS') \
                         or (prev_token in token_table and f'OBJECT' in token_table[prev_token]) \
-                        or (prev_token in token_table and f'ARRAY (PAINTER {list_data_types[-1]})' in token_table[prev_token])) \
-                        and ((next_token in token_table and f'VARIABLE ({list_data_types[-1].upper()})' in token_table[
+                        or (prev_token in token_table and f'ARRAY (PAINTER {data_type})' in token_table[prev_token])) \
+                        and ((next_token in token_table and f'VARIABLE ({data_type.upper()})' in token_table[
                     next_token]) \
-                        or (next_token in token_table and f'FUNCTION DEC (FOINTER {list_data_types[-1].upper()})' in
+                        or (next_token in token_table and f'FUNCTION DEC (FOINTER {data_type.upper()})' in
                             token_table[next_token]) \
                         or (next_token in token_table and f'POINTER' in token_table[
                     next_token]) \
-                        or (next_token in token_table and f'ARRAY (PAINTER {list_data_types[-1]})' in token_table[
+                        or (next_token in token_table and f'ARRAY (PAINTER {data_type})' in token_table[
                             next_token])\
                         or (next_token in token_table and f'METHOD OF CLASS') ):
                     return 'ARITHMETIC OPERATOR'
-                if prev_token in data_types and (next_token in token_table and f'VARIABLE ({list_data_types[-1].upper()})' in token_table[next_token]) \
-                    or (next_token in token_table and f'FUNCTION DEC (FOINTER {list_data_types[-1].upper()})' in token_table[next_token]) \
+                if prev_token in data_types and (next_token in token_table and f'VARIABLE ({data_type.upper()})' in token_table[next_token]) \
+                    or (next_token in token_table and f'FUNCTION DEC (FOINTER {data_type.upper()})' in token_table[next_token]) \
                     or (next_token in token_table and f'POINTER' in token_table[next_token]) \
                     or (next_token in token_table and f'METHOD OF CLASS')\
-                    or (next_token in token_table and f'ARRAY (PAINTER {list_data_types[-1]})'):
+                    or (next_token in token_table and f'ARRAY (PAINTER {data_type})'):
                     token_table[token] = 'ASTERIK'
                     return 'ASTERIK'
-                elif prev_token in data_types or (next_token in token_table and f'VARIABLE ({list_data_types[-1].upper()})' in token_table[next_token]) \
-                    or (next_token in token_table and f'FUNCTION DEC (FOINTER {list_data_types[-1].upper()})' in token_table[next_token]) \
+                elif prev_token in data_types or (next_token in token_table and f'VARIABLE ({data_type.upper()})' in token_table[next_token]) \
+                    or (next_token in token_table and f'FUNCTION DEC (FOINTER {data_type.upper()})' in token_table[next_token]) \
                     or (next_token in token_table and f'POINTER' in token_table[next_token]) \
                     or (next_token in token_table and f'METHOD OF CLASS'):
                     token_table[token] = 'ASTERIK'
                     return 'ASTERIK'
                 return 'ARITHMETIC OPERATOR'
-        if token in ('++', '--', '&&', '=='):
+        if token in ('+', '&', '='):
             if prev_token:
-                if prev_token in ('+', '-', '&', '=', '++', '--', '&&', '=='):
-                    return 'LEXICAL ERROR'
-        if token in ('+', '-', '&', '='):
-            if prev_token:
-                if prev_token in ('&&', '++', '--', '=='):
-                    return 'LEXICAL ERROR'
+                if prev_token in ('&', '+', '-', '='):
+                    return 'SYNTAX ERROR!'
+        if token in ('++', '--'):
+            if prev_token and prev_token in ('++', '--'):
+                return 'SYNTAX ERROR!'
         if token == '&':
             if prev_token in data_types or (prev_token in token_table and token_table[prev_token] == 'CLASS') \
                     or (prev_token in classes) or prev_token in keywords:
@@ -183,12 +186,14 @@ def classify_token(token, prev_token, next_token, token_table):
         token_table[token] = operators[token]
         return operators[token]
     elif token in data_types:
+        list_data_types.append(token)
+        # if prev_token in token_table and (prev_token not in (';', ':', ',', '(', '{', '}') and token_table[prev_token] not in ('LIBRARY', 'HEADER FILE')):
+        #     token_table[token] = 'SYNTAX ERROR!'
+        #     return 'SYNTAX ERROR!'
         if prev_token in ('/*', '//'):
             token_table[token] = 'STRING OF COMMENT'
             return 'STRING OF COMMENT'
         token_table[token] = data_types[token]
-
-        list_data_types.append(token)
         return data_types[token]
     elif token.endswith('[]'):
         token_table[token] = 'ARRAY'
@@ -196,10 +201,13 @@ def classify_token(token, prev_token, next_token, token_table):
     elif is_string(token):
         if prev_token == '#include':
             token_table[token] = 'HEADER FILE'
+            if token.startswith("'") and token.endswith("'"):
+                token_table[token] = 'SEMANTIC ERROR!'
+                return 'SEMANTIC ERROR!'
             return 'HEADER FILE'
-        # if prev_token == '<<':
-        #     token_table[token] = 'STRING OUTPUT'
-        #     return 'STRING OUTPUT'
+        if token.startswith("'") and token.endswith("'") and len(token) > 3:
+            token_table[token] = 'SEMANTIC ERROR!'
+            return 'SEMANTIC ERROR!'
         token_table[token] = 'STRING'
         return 'STRING'
     elif is_integer_type(token):
@@ -234,14 +242,14 @@ def classify_token(token, prev_token, next_token, token_table):
         if token in token_table:
             if next_token == '(' and token_table[token] == 'CLASS':
                 return 'CONSTUCTURE'
-            if 'FUNCTION DEC' in token_table[token]:
-                return 'FUNCTION CALL'
+            # if 'FUNCTION DEC' in token_table[token]:
+            #     return 'FUNCTION CALL'
             # if 'VARIABLE' in token_table[token]:
             #     match = re.search(pattern, token_table[token])
             #     if match:
             #         data_type = match.group(1)
             #         if list_data_types[-1] != data_type.lower():
-            #             token_table[token] = f'VARIABLE ({data_type})'
+            #             token_table[token] = f'VARIABLE ({list_data_types[-1].upper()})'
             return token_table[token]
         else:
             if prev_token == '#define':
@@ -271,26 +279,28 @@ def classify_token(token, prev_token, next_token, token_table):
                         return f'ARRAY (PAINTER {list_data_types[-1]})'
             elif next_token == '(':
                 if prev_token in data_types:
-                    token_table[token] = f'FUNCTION DEC ({list_data_types[-1].upper()})'
-                    return f'FUNCTION DEC ({list_data_types[-1].upper()})'
+                    token_table[token] = f'FUNCTION ({list_data_types[-1].upper()})'
+                    return f'FUNCTION ({list_data_types[-1].upper()})'
                 elif prev_token == '*':
                     if prev_token in token_table and token_table[prev_token] == 'CLASS POINTER':
                         token_table[token] = f'METHOD OF CLASS'
                         return f'METHOD OF CLASS'
                     if len(list_data_types) != 0:
-                        token_table[token] = f'FUNCTION DEC (FOINTER {list_data_types[-1].upper()})'
+                        token_table[token] = f'FUNCTION (FOINTER {list_data_types[-1].upper()})'
                     else:
-                        token_table[token] = f'FUNCTION DEC (FOINTER)'
-                        return f'FUNCTION DEC (FOINTER)'
-                    return f'FUNCTION DEC (FOINTER {list_data_types[-1].upper()})'
+                        token_table[token] = f'FUNCTION (FOINTER)'
+                        return f'FUNCTION (FOINTER)'
+                    return f'FUNCTION (FOINTER {list_data_types[-1].upper()})'
             else:
                 if prev_token == '*' and (prev_token in token_table and token_table[prev_token] == 'CLASS POINTER'):
                     token_table[token] = f'METHOD OF CLASS'
                     return f'METHOD OF CLASS'
                 if prev_token in data_types or prev_token == ',':
                     if len(list_data_types) != 0:
-                        token_table[token] = f'VARIABLE ({list_data_types[-1].upper()})'
-                        return f'VARIABLE ({list_data_types[-1].upper()})'
+                        data_type = list_data_types[-1]
+                        list_data_types.pop()
+                        token_table[token] = f'VARIABLE ({data_type.upper()})'
+                        return f'VARIABLE ({data_type.upper()})'
                     else:
                         token_table[token] = f'VARIABLE'
                         return f'VARIABLE'
@@ -300,13 +310,15 @@ def classify_token(token, prev_token, next_token, token_table):
                         return f'SYNTAX ERROR! {prev_token} {token}'
                     if prev_token == '*':
                         if len(list_data_types) != 0:
-                            token_table[token] = f'POINTER ({list_data_types[-1].upper()})'
-                            return f'POINTER ({list_data_types[-1].upper()})'
+                            data_type = list_data_types[-1]
+                            list_data_types.pop()
+                            token_table[token] = f'POINTER ({data_type.upper()})'
+                            return f'POINTER ({data_type.upper()})'
                             # token_table[token] = f'POINTER'
                             # return f'POINTER'
                         else:
-                            token_table[token] = f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
-                            return f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
+                            token_table[token] = f'SEMANTIC ERROR! UNRECOGNIZED IDENTIFIER'
+                            return f'SEMANTIC ERROR! UNRECOGNIZED IDENTIFIER'
             if next_token == '{':
                 if prev_token in 'class':
                     token_table[token] = 'CLASS'
@@ -326,10 +338,10 @@ def classify_token(token, prev_token, next_token, token_table):
             else:
                 match = check_match(token, token_table.items())
                 if match:
-                    token_table[token] = f'SIMILAR TO: {match}'
-                    return f'LEXICAL ERROR! SIMILAR TO: {match}'
+                    token_table[token] = f'SEMANTIC ERROR! SIMILAR TO: {match}'
+                    return f'SEMANTIC ERROR! SIMILAR TO: {match}'
                 else:
-                    return f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
+                    return f'SEMANTIC ERROR! UNRECOGNIZED IDENTIFIER'
     else:
         if prev_token in ('/*', '//'):
             token_table[token] = 'STRING OF COMMENT'
@@ -348,8 +360,8 @@ def classify_token(token, prev_token, next_token, token_table):
                 token_table[token] = 'FLOAT'
                 return 'FLOAT'
             else:
-                token_table[token] = f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
-                return f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
+                token_table[token] = f'SEMANTIC ERROR! UNRECOGNIZED IDENTIFIER'
+                return f'SEMANTIC ERROR! UNRECOGNIZED IDENTIFIER'
         elif token.endswith(('ULL', 'ull')):
             if is_integer_type(token[:-3]):
                 token_table[token] = 'INTEGER'
@@ -358,8 +370,8 @@ def classify_token(token, prev_token, next_token, token_table):
                 token_table[token] = 'FLOAT'
                 return 'FLOAT'
             else:
-                token_table[token] = f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
-                return f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
+                token_table[token] = f'SEMANTIC ERROR! UNRECOGNIZED IDENTIFIER'
+                return f'SEMANTIC ERROR! UNRECOGNIZED IDENTIFIER'
         elif token.endswith(('L', 'l', 'F', 'f', 'D', 'd')):
             if is_integer_type(token[:-1]):
                 token_table[token] = 'INTEGER'
@@ -372,21 +384,27 @@ def classify_token(token, prev_token, next_token, token_table):
                     return 'LEXICAL ERROR! Identifier cannot start with a digit.'
                 if any(char in token for char in special_symbols):
                     return 'LEXICAL ERROR! Special symbols detected!'
-                token_table[token] = f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
-                return f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
+                token_table[token] = f'SEMANTIC ERROR! UNRECOGNIZED IDENTIFIER'
+                return f'SEMANTIC ERROR! UNRECOGNIZED IDENTIFIER'
         else:
             if next_token == '[':
                 if prev_token in data_types:
-                    token_table[token] = f'ARRAY ({list_data_types[-1]})'
-                    return f'ARRAY ({list_data_types[-1]})'
+                    if len(list_data_types) != 0:
+                        data_type = list_data_types[-1]
+                        list_data_types.pop()
+                        token_table[token] = f'ARRAY ({data_type})'
+                        return f'ARRAY ({data_type})'
                 elif prev_token == '*':
                     if prev_token in token_table and token_table[prev_token] == 'ASTERIK':
-                        token_table[token] = f'ARRAY (PAINTER {list_data_types[-1]})'
-                        return f'ARRAY (PAINTER {list_data_types[-1]})'
+                        if len(list_data_types) != 0:
+                            data_type = list_data_types[-1]
+                            list_data_types.pop()
+                            token_table[token] = f'ARRAY (PAINTER {data_type})'
+                            return f'ARRAY (PAINTER {data_type})'
             match = check_match(token, token_table.items())
             if match:
-                token_table[token] = f'SIMILAR TO: {match}'
-                return f'LEXICAL ERROR! SIMILAR TO: {match}'
+                token_table[token] = f'SEMANTIC ERROR! SIMILAR TO: {match}'
+                return f'SEMANTIC ERROR! SIMILAR TO: {match}'
             else:
                 token_table[token] = f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
                 return f'LEXICAL ERROR! UNRECOGNIZED IDENTIFIER'
