@@ -1,7 +1,7 @@
 #include <iostream>
 #include <vector>
 int main() {
-    std::vector<int> arr = {64, 25, 12, 22, 11};
+    int arr[5] = {64, 25, 12, 22, 11};
     int n = arr.size();
     for (int i = 0; i < n - 1; ++i) {
         for (int j = 0; j < n - i - 1; ++j) {
@@ -16,4 +16,5 @@ int main() {
     }
     std::cout << std::endl;
 
+    return 0;
 }

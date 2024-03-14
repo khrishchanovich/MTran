@@ -10,13 +10,11 @@
 |  3     |(                                  |PARENTHESIS                                         
 |  3     |)                                  |PARENTHESIS                                         
 |  3     |{                                  |PARENTHESIS                                         
-|  4     |std                                |NAMESPACE                                           
-|  4     |::                                 |DOUBLE COLON                                        
-|  4     |vector                             |CONTAINER                                           
-|  4     |<                                  |SIGN                                                
 |  4     |int                                |DATA TYPE                                           
-|  4     |>                                  |SIGN                                                
-|  4     |arr                                |CONTAINER VECTOR                                    
+|  4     |arr                                |ARRAY (int)                                         
+|  4     |[                                  |PARENTHESIS                                         
+|  4     |5                                  |INTEGER                                             
+|  4     |]                                  |PARENTHESIS                                         
 |  4     |=                                  |ASSIGNMENT OPERATOR                                 
 |  4     |{                                  |PARENTHESIS                                         
 |  4     |64                                 |INTEGER                                             
@@ -33,7 +31,7 @@
 |  5     |int                                |DATA TYPE                                           
 |  5     |n                                  |VARIABLE (INT)                                      
 |  5     |=                                  |ASSIGNMENT OPERATOR                                 
-|  5     |arr                                |CONTAINER VECTOR                                    
+|  5     |arr                                |ARRAY (int)                                         
 |  5     |.                                  |OPERATOR                                            
 |  5     |size                               |METHOD                                              
 |  5     |(                                  |PARENTHESIS                                         
@@ -77,12 +75,12 @@
 |  7     |{                                  |PARENTHESIS                                         
 |  8     |if                                 |KEYWORD                                             
 |  8     |(                                  |PARENTHESIS                                         
-|  8     |arr                                |CONTAINER VECTOR                                    
+|  8     |arr                                |ARRAY (int)                                         
 |  8     |[                                  |PARENTHESIS                                         
 |  8     |j                                  |VARIABLE (INT)                                      
 |  8     |]                                  |PARENTHESIS                                         
 |  8     |>                                  |COMPARISON OPERATOR                                 
-|  8     |arr                                |CONTAINER VECTOR                                    
+|  8     |arr                                |ARRAY (int)                                         
 |  8     |[                                  |PARENTHESIS                                         
 |  8     |j                                  |VARIABLE (INT)                                      
 |  8     |+                                  |ARITHMETIC OPERATOR                                 
@@ -94,12 +92,12 @@
 |  9     |::                                 |DOUBLE COLON                                        
 |  9     |swap                               |METHOD                                              
 |  9     |(                                  |PARENTHESIS                                         
-|  9     |arr                                |CONTAINER VECTOR                                    
+|  9     |arr                                |ARRAY (int)                                         
 |  9     |[                                  |PARENTHESIS                                         
 |  9     |j                                  |VARIABLE (INT)                                      
 |  9     |]                                  |PARENTHESIS                                         
 |  9     |,                                  |COMA                                                
-|  9     |arr                                |CONTAINER VECTOR                                    
+|  9     |arr                                |ARRAY (int)                                         
 |  9     |[                                  |PARENTHESIS                                         
 |  9     |j                                  |VARIABLE (INT)                                      
 |  9     |+                                  |ARITHMETIC OPERATOR                                 
@@ -135,7 +133,7 @@
 |  15    |::                                 |DOUBLE COLON                                        
 |  15    |cout                               |KEYWORD                                             
 |  15    |<<                                 |OPERATOR                                            
-|  15    |arr                                |CONTAINER VECTOR                                    
+|  15    |arr                                |ARRAY (int)                                         
 |  15    |[                                  |PARENTHESIS                                         
 |  15    |i                                  |VARIABLE (INT)                                      
 |  15    |]                                  |PARENTHESIS                                         
@@ -151,5 +149,8 @@
 |  17    |::                                 |DOUBLE COLON                                        
 |  17    |endl                               |KEYWORD                                             
 |  17    |;                                  |END OF CONSTRUCTION                                 
+|  18    |return                             |KEYWORD                                             
+|  18    |0                                  |INTEGER                                             
+|  18    |;                                  |END OF CONSTRUCTION                                 
 |  19    |}                                  |PARENTHESIS                                         
 +----------------------------------------------------------------+

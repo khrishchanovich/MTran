@@ -5,105 +5,116 @@
         |- Header file: <vector>
     |- Function: int main
         |- Parameters: Parameters
-        |- Block: Block
-            |- StdNamespace: std
-                |- Colon: ::
-                    |- Comparison: <
-                    |- Comparison: >
-                    |- Assignment: =
-                    |- Block: Block
-                        |- Value: 64
-                        |- Comma: ,
-                        |- Value: 25
-                        |- Comma: ,
-                        |- Value: 12
-                        |- Comma: ,
-                        |- Value: 22
-                        |- Comma: ,
-                        |- Value: 11
+        |- Block: int
+            |- Declare Array: int arr
+                |- Square Block: arr
+                    |- Value: int 5
+                |- Assignment: =
+                |- Block: Declare Array
+                    |- Value: int 64
+                    |- Comma: ,
+                    |- Value: int 25
+                    |- Comma: ,
+                    |- Value: int 12
+                    |- Comma: ,
+                    |- Value: int 22
+                    |- Comma: ,
+                    |- Value: int 11
             |- Statement: ;
             |- Declare: int n
                 |- Assignment: =
-                |- DotOperator: .
-                |- Method f: size
-                    |- Parameters: Parameters
+                |- Array: int arr
+                    |- DotOperator: .
+                    |- Method f: size
+                        |- Parameters: Parameters
             |- Statement: ;
             |- ForLoop: for
                 |- Parameters: Parameters
                     |- Declare: int i
                         |- Assignment: =
-                        |- Value: 0
+                        |- Value: int 0
                     |- Statement: ;
-                    |- Variable: i
+                    |- Variable: int i
                         |- Comparison: <
-                        |- Variable: n
+                        |- Variable: int n
                             |- Operator: -
-                            |- Value: 1
+                            |- Value: int 1
                     |- Statement: ;
                     |- Operator: ++
-                    |- Variable: i
-                |- Block: Block
+                    |- Variable: int i
+                |- Block: ForLoop
                     |- ForLoop: for
                         |- Parameters: Parameters
                             |- Declare: int j
                                 |- Assignment: =
-                                |- Value: 0
+                                |- Value: int 0
                             |- Statement: ;
-                            |- Variable: j
+                            |- Variable: int j
                                 |- Comparison: <
-                                |- Variable: n
+                                |- Variable: int n
                                     |- Operator: -
-                                    |- Variable: i
+                                    |- Variable: int i
                                         |- Operator: -
-                                        |- Value: 1
+                                        |- Value: int 1
                             |- Statement: ;
                             |- Operator: ++
-                            |- Variable: j
-                        |- Block: Block
+                            |- Variable: int j
+                        |- Block: ForLoop
                             |- IfStatement: if
                                 |- Parameters: Parameters
-                                    |- Variable: j
+                                    |- Array: int arr
+                                        |- Square Block: arr
+                                            |- Variable: int j
                                         |- Comparison: >
-                                        |- Variable: j
-                                            |- Operator: +
-                                            |- Value: 1
-                                |- Block: Block
+                                        |- Array: int arr
+                                            |- Square Block: arr
+                                                |- Variable: int j
+                                                    |- Operator: +
+                                                    |- Value: int 1
+                                |- Block: IfStatement
                                     |- StdNamespace: std
                                         |- Colon: ::
                                             |- Method f: swap
                                                 |- Parameters: Parameters
-                                                    |- Variable: j
-                                                    |- Comma: ,
-                                                    |- Variable: j
-                                                        |- Operator: +
-                                                        |- Value: 1
+                                                    |- Array: int arr
+                                                        |- Square Block: arr
+                                                            |- Variable: int j
+                                                        |- Comma: ,
+                                                        |- Array: int arr
+                                                            |- Square Block: arr
+                                                                |- Variable: int j
+                                                                    |- Operator: +
+                                                                    |- Value: int 1
                                     |- Statement: ;
             |- StdNamespace: std
                 |- Colon: ::
                     |- Method: cout
                     |- Operator Input: <<
-                        |- Value: "Sorted array: "
+                        |- Value: str "Sorted array: "
             |- Statement: ;
             |- ForLoop: for
                 |- Parameters: Parameters
                     |- Declare: int i
                         |- Assignment: =
-                        |- Value: 0
+                        |- Value: int 0
                     |- Statement: ;
-                    |- Variable: i
+                    |- Variable: int i
                         |- Comparison: <
-                        |- Variable: n
+                        |- Variable: int n
                     |- Statement: ;
                     |- Operator: ++
-                    |- Variable: i
-                |- Block: Block
+                    |- Variable: int i
+                |- Block: ForLoop
                     |- StdNamespace: std
                         |- Colon: ::
                             |- Method: cout
                             |- Operator Input: <<
-                                |- Variable: i
+                                |- Array: int arr
+                                    |- Square Block: arr
+                                        |- Variable: int i
                                     |- Operator Input: <<
-                                        |- Value: " "
+                                        |- Value: str " "
+                                |- Statement: ;
                     |- Statement: ;
             |- StdNamespace: std
                 |- Colon: ::
@@ -113,3 +124,5 @@
                             |- Colon: ::
                                 |- Method: endl
             |- Statement: ;
+            |- ReturnStatement: return
+                |- Value: int 0

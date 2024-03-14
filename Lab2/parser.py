@@ -10,6 +10,8 @@ numbers = r'\d+'
 commas = r','
 semicolon = r';'
 
+variable_types = {}
+variable_scope = []
 
 def check_variable(token_type, token, data_type):
     if 'VARIABLE' in token_type:
@@ -160,6 +162,7 @@ def build_syntax_tree(tokens):
 
     function_definitions = {}
     branch_stack = []
+    square_stack = []
     param_stack = []
     bracket_stack = []
     include_stack = []
@@ -170,6 +173,7 @@ def build_syntax_tree(tokens):
     if_stack = []
     return_stack = []
     class_stack = []
+    function_stack = []
     std_stack = []
     for_stack = []
 
@@ -204,131 +208,143 @@ def build_syntax_tree(tokens):
             current_comment += token + " "
             continue
 
-        if 'VARIABLE' in token_type or 'POINTER' in token_type or 'ARRAY' in token_type:
-            match = re.search(pattern, token_type)
-            if match:
-                if len(data_stack) != 0:
-                    variable_already_exists = any(child.name == token for child in current_node.children)
-                    if variable_already_exists:
-                        semantic_error_node = Node(token,
-                                                   f'Semantic error! Variable "{token}" has already been declared.')
-                        current_node.add_child(semantic_error_node)
+        if 'VARIABLE' in token_type or 'POINTER' in token_type:
+            if len(data_stack) != 0:
+                variable_already_exists = any(child.name == token for child in current_node.children)
+                if variable_already_exists:
+                    semantic_error_node = Node(token,
+                                                 f'Semantic error! Variable "{token}" has already been declared.')
+                    current_node.add_child(semantic_error_node)
+                    break
+                variable_types[token] = data_stack[-1]
+                if data_stack[-1] == 'STRING':
+                    is_string_declaration = True
+                if len(variable_scope) != 0:
+                    temp_scope = False
+                    for var, scope in variable_scope:
+                        temp_parent_node = current_node.parent
+                        if token == var and temp_parent_node.name == scope:
+                            semantic_error_node = Node(token,
+                                                       f'Semantic error! Variable "{token}" has already been declared.')
+                            current_node.add_child(semantic_error_node)
+                            temp_scope = True
+                    if temp_scope:
                         break
-                    data_type = match.group(1)
-                    if data_type == 'STRING':
-                        is_string_declaration = True
-                    variable_node = Node(token, 'Declare', data_stack[-1].lower())
-                    data_stack.pop()
-                    is_value = True
+                variable_node = Node(token, 'Declare', data_stack[-1].lower())
+                data_stack.pop()
+                is_value = True
+            else:
+                if token not in variable_types:
+                    first_children = current_node.children[-1]
+                    second_children = current_node.children[-2]
+
+                    if first_children.type == 'Comma':
+                        print('True')
+                        if second_children.type == 'Declare':
+                            variable_node = Node(token, 'Declare', second_children.data_type)
+                            variable_types[token] = second_children.data_type
+
                 else:
                     is_string_declaration = False
-                    variable_node = Node(token, 'Variable', None)
+                    variable_node = Node(token, 'Variable', variable_types.get(token))
                     is_value = True
 
-                # if is_array_declaration:
-                #     is_array_declaration = False
-                #     continue
+            temp_parent_node = current_node.parent
+            variable_scope.append((token, temp_parent_node.name))
 
-                variable_stack.append(current_node)
-                current_node.add_child(variable_node)
-                current_node = variable_node
-                parent_node = current_node.parent
+            variable_stack.append(current_node)
+            current_node.add_child(variable_node)
+            current_node = variable_node
+            parent_node = current_node.parent
 
-                semicolon_present = False
-                for tok, _, ln in tokens:
-                    if ln == line and tok == ";" and parent_node.type in (
-                            'ProgramType', 'Block', 'Declare', 'AccessModifier', 'ReturnStatement') or parent_node.type in (
-                            'Parameters', 'Function', 'Colon', 'Variable', 'Operator Input', 'Array'):
-                        semicolon_present = True
-                        break
-
-                if not semicolon_present:
-                    syntax_error_node = Node(f"Semicolon missing after variable declaration.",
-                                             f'Syntax error!')
-                    current_node.add_child(syntax_error_node)
+            semicolon_present = False
+            for tok, _, ln in tokens:
+                if ln == line and tok == ";" and parent_node.type in (
+                        'ProgramType', 'Block', 'Declare', 'AccessModifier', 'ReturnStatement') or parent_node.type in (
+                        'Parameters', 'Function', 'Function Call','Colon', 'Variable', 'Operator Input', 'Array', 'Square Block'):
+                    semicolon_present = True
                     break
 
-            else:
-                variable_node = Node(token, 'Variable', None)
-                variable_stack.append(current_node)
-                current_node.add_child(variable_node)
-                current_node = variable_node
-                parent_node = current_node.parent
-
-                semicolon_present = False
-                for tok, _, ln in tokens:
-                    if ln == line and tok == ";" and parent_node.type in (
-                            'ProgramType', 'Block', 'Declare', 'AccessModifier') or parent_node.type in (
-                            'Parameters', 'Function', 'ForLoop',  'Variable', 'Operator Input'):
-                        semicolon_present = True
-                        break
-
-                if not semicolon_present:
-                    syntax_error_node = Node(f"Semicolon missing after variable declaration.",
-                                             f'Syntax error!')
-                    current_node.add_child(syntax_error_node)
-                    break
+            if not semicolon_present:
+                syntax_error_node = Node(f"Semicolon missing after variable declaration.",
+                                         f'Syntax error!')
+                current_node.add_child(syntax_error_node)
+                break
 
         if 'ARRAY' in token_type:
-            array_name = token
-            is_array_declaration = True
-            match = re.search(pattern, token_type)
-            if match:
-                if len(data_stack) != 0:
-                    data_type = match.group(1)
-                else:
-                    data_type = None
+            if len(data_stack) != 0:
+                array_already_exists = any(child.name == token for child in current_node.children)
+                if array_already_exists:
+                    semantic_error_node = Node(token,
+                                                 f'Semantic error! Variable "{token}" has already been declared.')
+                    current_node.add_child(semantic_error_node)
+                    break
+                variable_types[token] = data_stack[-1]
+                if data_stack[-1] == 'STRING':
+                    is_string_declaration = True
+                if len(variable_scope) != 0:
+                    temp_scope = False
+                    for var, scope in variable_scope:
+                        temp_parent_node = current_node.parent
+                        if token == var and temp_parent_node.name == scope:
+                            semantic_error_node = Node(token,
+                                                       f'Semantic error! Variable "{token}" has already been declared.')
+                            current_node.add_child(semantic_error_node)
+                            temp_scope = True
+                    if temp_scope:
+                        break
+                variable_node = Node(token, 'Declare Array', data_stack[-1].lower())
+                data_stack.pop()
+                is_value = True
             else:
-                print('Error')
+                is_string_declaration = False
+                variable_node = Node(token, 'Array', variable_types.get(token))
+                is_value = True
+
+            if current_node.parent:
+                temp_parent_node = current_node.parent
+                variable_scope.append((token, temp_parent_node.name))
+            else:
+                variable_scope.append((token, current_node.name))
+
+            variable_stack.append(current_node)
+            current_node.add_child(variable_node)
+            current_node = variable_node
+            parent_node = current_node.parent
+
+            semicolon_present = False
+            for tok, _, ln in tokens:
+                if ln == line and tok == ";" and parent_node.type in (
+                        'ProgramType', 'Block', 'Declare', 'AccessModifier', 'ReturnStatement') or parent_node.type in (
+                        'Parameters', 'Function', 'Function Call','Colon', 'Operator Input', 'Variable', 'Array'):
+                    semicolon_present = True
+                    break
+
+            if not semicolon_present:
+                syntax_error_node = Node(f"Semicolon missing after variable declaration.",
+                                         f'Syntax error!')
+                current_node.add_child(syntax_error_node)
+                break
 
         if token == '[':
-            tok_list = []
-            for inner_token, _, line in tokens:
-                tok_list.append(inner_token)
-                array_in = find_chars_between(tok_list, '[', ']')
-                if inner_token == ']':
-                    if is_array_declaration:
-                        if len(data_stack) != 0:
-                            array_node = Node(array_name, 'Declare array', data_type.lower(), array_in)
-                            data_stack.pop()
-                        else:
-                            array_node = Node(array_name, 'Array', None, array_in)
-                        array_name = None
-                        variable_stack.append(current_node)
-                        current_node.add_child(array_node)
-                        current_node = array_node
+            square_node = Node(current_node.name, 'Square Block')
+            square_stack.append(current_node)
+            current_node.add_child(square_node)
+            current_node = square_node
 
-                        parent_node = current_node.parent
-
-                        # semicolon_present = False
-                        # for tok, _, ln in tokens:
-                        #     if ln == line and tok == ";" and parent_node.type in (
-                        #     'ProgramType', 'Block') or parent_node.type in (
-                        #     'Parameters', 'Variable', 'AccessModifier', 'Declare', 'Function', 'Declare array'):
-                        #         semicolon_present = True
-                        #
-                        #
-                        # if not semicolon_present:
-                        #     syntax_error_node = Node(f"Syntax error: Semicolon missing after variable declaration.",
-                        #                              f'Syntax error! {line}')
-                        #     current_node.add_child(syntax_error_node)
-                        #     exit()
-                        is_array_declaration = False
-                        tok_list.clear()
-                        break
-                    if is_string_declaration:
-                        array_node = Node(array_in, 'Inside array')
-                        current_node.add_child(array_node)
-                        # current_node = array_node
-                        is_string_declaration = False
-                        tok_list.clear()
-                        break
-                    # if is_value:
-                    #     array_node = Node(array_in, 'Inside array')
-                    #     current_node.add_child(array_node)
-                    #     # is_value = False
-                    #     tok_list.clear()
+        if token == ']':
+            if current_node.type == 'Square Block':
+                temp_list = []
+                temp_list.extend(current_node.children)
+                semantic_error = False
+                for i in temp_list:
+                    if i.data_type != 'int':
+                        semantic_error = True
+                if semantic_error:
+                    semantic_error_node = Node(token, 'Semantic error! In array')
+                    current_node.add_child(semantic_error_node)
                     break
+            current_node = square_stack.pop()
 
         if token == "#include":
             preprocessor_directive_node = PreprocessorDirectiveNode(token, "PreprocessorDirective")
@@ -342,38 +358,27 @@ def build_syntax_tree(tokens):
             current_node = include_stack.pop()
 
         if token_type == "CLASS":
-            parent_node = current_node
             class_node = ClassNode(token, "Class")
             class_stack.append(current_node)
             current_node.add_child(class_node)
             current_node = class_node
 
         if 'FUNCTION' in token_type:
-            match = re.search(pattern, token_type)
-            if match:
-                if len(data_stack) != 0:
-                    function_already_exists = any(child.name == token for child in current_node.children)
-                    if function_already_exists:
-                        semantic_error_node = Node(token,
-                                                   f'Semantic error! Variable "{token}" has already been declared.')
-                        current_node.add_child(semantic_error_node)
-                        break
-                    data_type = match.group(1)
-                    function_node = Node(token, 'Function', data_stack[-1].lower())
-                    data_stack.pop()
-                else:
-                    function_node = Node(token, 'Function Call', None)
-                branch_stack.append(current_node)
-                current_node.add_child(function_node)
-                current_node = function_node
+            if len(data_stack) != 0:
+                function_already_exists = any(child.name == token for child in current_node.children)
+                if function_already_exists:
+                    semantic_error_node = Node(token,
+                                               f'Semantic error! Variable "{token}" has already been declared.')
+                    current_node.add_child(semantic_error_node)
+                    break
+                function_node = Node(token, 'Function', data_stack[-1].lower())
+                data_stack.pop()
             else:
-                print('Error')
+                function_node = Node(token, 'Function Call', None)
 
-        # if token_type == 'FUNCTION CALL':
-        #     function_call_node = Node(token, 'Function Call')
-        #     param_stack.append(current_node)
-        #     current_node.add_child(function_call_node)
-        #     current_node = function_call_node
+            function_stack.append(current_node)
+            current_node.add_child(function_node)
+            current_node = function_node
 
         if 'OBJECT OF' in token_type:
             object_node = Node(token, 'Object')
@@ -414,40 +419,44 @@ def build_syntax_tree(tokens):
                 while sum != 0:
                     current_node = variable_stack.pop()
                     sum -= 1
-            branch_list_node = Node("Block", "Block")
-            branch_stack.append(current_node)
-            current_node.add_child(branch_list_node)
-            current_node = branch_list_node
+            temp_node = current_node
+            if current_node.type == 'Function':
+                branch_list_node = Node(temp_node.data_type, "Block")
+                branch_stack.append(current_node)
+                current_node.add_child(branch_list_node)
+                current_node = branch_list_node
+            else:
+                branch_list_node = Node(current_node.type, "Block")
+                branch_stack.append(current_node)
+                current_node.add_child(branch_list_node)
+                current_node = branch_list_node
 
-            if current_node.type == 'Block':
-                parent_node = current_node.parent
-                num_values = 0
-                num_commas = 0
-                tok_list = []
-                if parent_node.type == 'Declare array':
-                    for inner_token, _, line in tokens:
-                        tok_list.append(inner_token)
+        if token == "}":
+            temp_node = current_node.parent
+            if temp_node.type == 'Declare Array' or temp_node.type == 'Array':
+                temp_list = []
+                temp_list.extend(current_node.children)
+                sum_comma = 0
+                sum_values = 0
+                for i in temp_list:
+                    if i.name == ',':
+                        sum_comma += 1
+                    else:
+                        sum_values += 1
+                if sum_comma >= sum_values or (sum_values - sum_comma) >= 2:
+                    syntax_error_node = Node('Missing comma', f'Syntax error!')
+                    current_node.add_child(syntax_error_node)
+                    break
 
-                        array_in = find_chars_between(tok_list, '{', '}')
-                        num_values = len(re.findall(numbers, array_in))
-                        num_commas = len(re.findall(commas, array_in))
-
-                    if num_commas >= num_values or (num_values - num_commas) >= 2:
-                        syntax_error_node = Node('Missing comma', f'Syntax error!')
-                        current_node.add_child(syntax_error_node)
-                        break
-                # if parent_node.type in ('ProgramType', 'Parenthis', 'Block'):
-                #     for inner_token, _, line in tokens:
-
-
-        elif token == "}":
             current_node = branch_stack.pop()
             if current_node.type == 'ForLoop':
                 current_node = for_stack.pop()
-            if current_node.type == 'Constructure' or current_node.type == 'Function':
+            if current_node.type == 'Constructure':
                 current_node = branch_stack.pop()
             if current_node.type == 'IfStatement':
                 current_node = if_stack.pop()
+            if current_node.type == 'Function':
+                current_node = function_stack.pop()
 
         if token == "(":
             if current_node.type == "Function" or current_node.type == 'Function Call' or current_node.type == 'ForLoop' or current_node.type == 'Method f' or current_node.type == 'Object' or current_node.type == 'Constructure' or current_node.type == "ProgramType" or current_node.type == "WhileLoop" or current_node.type == "IfStatement":
@@ -455,64 +464,53 @@ def build_syntax_tree(tokens):
                 param_stack.append(current_node)
                 current_node.add_child(parameters_list_node)
                 current_node = parameters_list_node
-
-                if current_node.type == 'Parameters':
-                    parent_node = current_node.parent
-                    num_semicolon = 0
-                    tok_list = []
-                    if parent_node.type == 'ForLoop':
-                        for inner_token, _, line in tokens:
-                            tok_list.append(inner_token)
-                            array_in = find_chars_between(tok_list, '(', ')')
-                            num_semicolon = len(re.findall(semicolon, array_in))
-                        if num_semicolon % 2 != 0:
-                            syntax_error_node = Node(token, f'Syntax error! In line {line}')
-                            current_node.add_child(syntax_error_node)
-                            break
             else:
                 bracket_list_node = Node(token, "Bracket")
                 bracket_stack.append(current_node)
                 current_node.add_child(bracket_list_node)
                 current_node = bracket_list_node
 
-        # if token == "(" and current_node.type == "Parameters":
-        #     parent_node = current_node.parent
-        #     sum = 0
-        #     if parent_node.type == 'ForLoop':
-        #         if current_node.type == 'Parameters':
-        #             for t, t_type, _ in tokens:
-        #                 if current_node.type == 'Block':
-        #                     break
-        #                 print(t)
-        #                 if t == ';':
-        #                     sum += 1
-        #             print(sum)
-        #             if sum % 2 != 0:
-        #                 syntax_error_node = Node(token, f'Syntax error! In line {line}')
-        #                 current_node.add_child(syntax_error_node)
-        #                 break
-
         if token == ")":
             sum = 0
             for i in variable_stack:
-                if current_node.type in ('Variable', 'Declare'):
+                if current_node.type in ('Variable', 'Declare', 'Declare Array', 'Array'):
                     sum += 1
             if sum > 0:
                 while sum != 0:
                     current_node = variable_stack.pop()
                     sum -= 1
             bracket_node = Node(token, 'Bracket')
+
             if current_node.type == 'Bracket':
                 parent_node = bracket_stack.pop()
                 current_node = parent_node
                 current_node.add_child(bracket_node)
             elif current_node.type == "Parameters":
+                parent_node = current_node.parent
+                if parent_node.type == 'ForLoop':
+                    temp_list = []
+                    temp_list.extend(current_node.children)
+                    sum_semicolon = 0
+                    sum_etc = 0
+                    for i in temp_list:
+                        if i.name == ';':
+                            sum_semicolon += 1
+                        else:
+                            sum_etc += 1
+                    if sum_semicolon != 2:
+                        syntax_error_node = Node(token, f'Syntax error! ForLoop')
+                        current_node.add_child(syntax_error_node)
+                        break
                 current_node = param_stack.pop()
-                if current_node.type == 'Function Call' or current_node.type == 'Method f' or current_node.type == 'Object':
+                if current_node.type == 'Function Call':
+                    current_node = function_stack.pop()
+                if current_node.type == 'ForLoop':
+                    for var, scope in variable_scope:
+                        if scope == 'for':
+                            variable_scope.remove((var, scope))
+                if current_node.type == 'Method f' or current_node.type == 'Object':
                     if len(param_stack) != 0:
                         current_node = param_stack.pop()
-                    # if current_node.type == 'Class':
-                    #     current_node = param_stack.pop()
 
         if token_type in ('FLOAT', 'STRING', 'INTEGER', 'BOOLEAN'):
             if current_node.data_type in ('int', 'long long', 'long', 'short', 'unsigned short', 'unsigned int', \
@@ -545,8 +543,18 @@ def build_syntax_tree(tokens):
                     semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
                     current_node.add_child(semantic_error_node)
                     break
-            var_node = Node(token, 'Value')
-            current_node.add_child(var_node)
+            if token_type == 'INTEGER':
+                var_node = Node(token, 'Value', 'int')
+                current_node.add_child(var_node)
+            elif token_type == 'FLOAT':
+                var_node = Node(token, 'Value', 'float')
+                current_node.add_child(var_node)
+            elif token_type == 'STRING':
+                var_node = Node(token, 'Value', 'str')
+                current_node.add_child(var_node)
+            elif token_type == 'BOOLEAN':
+                var_node = Node(token, 'Value', 'bool')
+                current_node.add_child(var_node)
 
             if len(io_stack) != 0:
                 current_node = io_stack.pop()
@@ -562,7 +570,7 @@ def build_syntax_tree(tokens):
             comparison_node = check_comparison(token, current_node)
 
         if token == ',':
-            if current_node.type in ('Variable', 'Declare'):
+            if current_node.type in ('Variable', 'Declare', 'Square Bloсk'):
                 current_node = variable_stack.pop()
             comma_node = Node(token, 'Comma')
             current_node.add_child(comma_node)
@@ -571,7 +579,7 @@ def build_syntax_tree(tokens):
             if len(variable_stack) != 0:
                 sum = 0
                 for i in variable_stack:
-                    if current_node.type in ('Variable', 'Declare', 'ReturnStatement', 'Declare array', 'Array'):
+                    if current_node.type in ('Variable', 'Declare', 'ReturnStatement', 'Declare Array', 'Array'):
                         sum += 1
                 if sum > 0:
                     while sum != 0:
@@ -599,6 +607,17 @@ def build_syntax_tree(tokens):
                         current_node = class_stack.pop()
                         sum_class -= 1
 
+            if current_node.type == 'Function':
+                if len(function_stack) != 0:
+                    current_node = function_stack.pop()
+                sum_func = 0
+                for i in function_stack:
+                    sum_func += 1
+                if sum_func > 0:
+                    while sum_func != 0:
+                        current_node = function_stack.pop()
+                        sum_func -= 1
+
             if current_node.type == 'Method f':
                 if len(param_stack) != 0:
                     current_node = param_stack.pop()
@@ -609,28 +628,6 @@ def build_syntax_tree(tokens):
                     while sum_param != 0:
                         current_node = param_stack.pop()
                         sum_param -= 1
-
-            # if current_node.type == 'Object':
-            #     if len(param_stack) != 0:
-            #         current_node = param_stack.pop()
-            #         print(current_node.type)
-            #     sum_obj = 0
-            #     for i in param_stack:
-            #         sum_obj += 1
-            #     if sum_obj > 0:
-            #         while sum_obj != 0:
-            #             current_node = param_stack.pop()
-            #             sum_obj -= 1
-
-            # if len(io_stack) != 0:
-            #     current_node = io_stack.pop()
-            # sum_io = 0
-            # for i in io_stack:
-            #     sum_io += 1
-            # if sum_io > 0:
-            #     while sum_io != 0:
-            #         current_node = sum_io.pop()
-            #         sum_io -= 1
 
             statement_node = StatementNode(token, "Statement")
             current_node.add_child(statement_node)
@@ -731,6 +728,13 @@ def build_syntax_tree(tokens):
             # current_node.add_child(io_operator_node)
 
         if token in operators and token_type == 'ARITHMETIC OPERATOR':
+            # if token == '+':
+            #     print(left_operand.name, right_operand.name)
+            #     if left_operand.data_type in ('int', 'long long', 'long', 'short', 'unsigned short', 'unsigned int', \
+            #                               'unsigned long long', 'unsigned long') and right_operand.data_type in ('signed char', 'char', 'unsigned char', 'wchar_t', 'char8_t', 'char16_t', 'char32_t'):
+            #         semantic_error_node = Node("Incompatible types for addition", "Semantic Error")
+            #         current_node.add_child(semantic_error_node)
+            #         break
             arithmetic_operator_node = Node(token, "Operator")
             current_node.add_child(arithmetic_operator_node)
 
@@ -739,10 +743,6 @@ def build_syntax_tree(tokens):
             for_stack.append(current_node)
             current_node.add_child(for_node)
             current_node = for_node
-        # elif token == 'for' and token_type != 'KEYWORD':
-        #     syntax_error_node = Node(token, f'Syntax error! In line {line}')
-        #     current_node.add_child(syntax_error_node)
-        #     break
 
         if token == "if" and token_type == 'KEYWORD':
             if_node = IfNode(token, "IfStatement")
