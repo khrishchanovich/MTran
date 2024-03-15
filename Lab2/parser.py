@@ -12,6 +12,8 @@ semicolon = r';'
 
 variable_types = {}
 variable_scope = []
+function_params = []
+function_param = 0
 
 def check_variable(token_type, token, data_type):
     if 'VARIABLE' in token_type:
@@ -188,6 +190,7 @@ def build_syntax_tree(tokens):
     current_comment = ""
 
     for token, token_type, line in tokens:
+        print(function_params)
         if token in data_types:
             data_stack.append(token)
 
@@ -222,12 +225,19 @@ def build_syntax_tree(tokens):
                 if len(variable_scope) != 0:
                     temp_scope = False
                     for var, scope in variable_scope:
-                        temp_parent_node = current_node.parent
-                        if token == var and temp_parent_node.name == scope:
-                            semantic_error_node = Node(token,
-                                                       f'Semantic error! Variable "{token}" has already been declared.')
-                            current_node.add_child(semantic_error_node)
-                            temp_scope = True
+                        if current_node.parent:
+                            temp_parent_node = current_node.parent
+                            if token == var and temp_parent_node.name == scope:
+                                semantic_error_node = Node(token,
+                                                           f'Semantic error! Variable "{token}" has already been declared.')
+                                current_node.add_child(semantic_error_node)
+                                temp_scope = True
+                        else:
+                            if token == var and current_node.name == scope:
+                                semantic_error_node = Node(token,
+                                                           f'Semantic error! Variable "{token}" has already been declared.')
+                                current_node.add_child(semantic_error_node)
+                                temp_scope = True
                     if temp_scope:
                         break
                 variable_node = Node(token, 'Declare', data_stack[-1].lower())
@@ -243,14 +253,16 @@ def build_syntax_tree(tokens):
                         if second_children.type == 'Declare':
                             variable_node = Node(token, 'Declare', second_children.data_type)
                             variable_types[token] = second_children.data_type
-
                 else:
                     is_string_declaration = False
                     variable_node = Node(token, 'Variable', variable_types.get(token))
                     is_value = True
 
-            temp_parent_node = current_node.parent
-            variable_scope.append((token, temp_parent_node.name))
+            if current_node.parent:
+                temp_parent_node = current_node.parent
+                variable_scope.append((token, temp_parent_node.name))
+            else:
+                variable_scope.append((token, current_node.name))
 
             variable_stack.append(current_node)
             current_node.add_child(variable_node)
@@ -365,16 +377,17 @@ def build_syntax_tree(tokens):
 
         if 'FUNCTION' in token_type:
             if len(data_stack) != 0:
+                variable_types[token] = data_stack[-1]
                 function_already_exists = any(child.name == token for child in current_node.children)
                 if function_already_exists:
                     semantic_error_node = Node(token,
-                                               f'Semantic error! Variable "{token}" has already been declared.')
+                                               f'Semantic error! Function "{token}" has already been declared.')
                     current_node.add_child(semantic_error_node)
                     break
                 function_node = Node(token, 'Function', data_stack[-1].lower())
                 data_stack.pop()
             else:
-                function_node = Node(token, 'Function Call', None)
+                function_node = Node(token, 'Function Call', variable_types.get(token))
 
             function_stack.append(current_node)
             current_node.add_child(function_node)
@@ -487,6 +500,76 @@ def build_syntax_tree(tokens):
                 current_node.add_child(bracket_node)
             elif current_node.type == "Parameters":
                 parent_node = current_node.parent
+                if parent_node.type == 'Function':
+                    function_children = []
+                    function_children.extend(current_node.children)
+                    function_param = 1
+                    for i in function_children:
+                        if i.type in ('Declare', 'Declare Array'):
+                            if i.children:
+                                children_temp = []
+                                children_temp.extend(i.children)
+                                for j in children_temp:
+                                    if j.type == 'Value':
+                                        function_params.append((function_param, i.name, i.data_type, j.name, parent_node.name))
+                                        function_param += 1
+                            else:
+                                function_params.append((function_param, i.name, i.data_type, None, parent_node.name))
+                                function_param += 1
+
+                if parent_node.type == 'Function Call':
+                    function_call_params = []
+                    function_call_childrens = []
+
+                    function_call_childrens.extend(current_node.children)
+                    function_param = 1
+
+                    for i in function_call_childrens:
+                        if i.data_type != None:
+                            function_call_params.append((function_param, i.name, i.data_type, parent_node.name))
+                            function_param += 1
+
+                    semantic_error = False
+                    num_func = 0
+                    num_params = 0
+
+                    for num, tok, dt, val, fn in function_params:
+                        if parent_node.name == fn:
+                            num_func += 1
+
+                    for num, tok, dt, fn in function_call_params:
+                        if parent_node.name == fn:
+                            num_params += 1
+
+                    if num_params < num_func:
+                        print('YES')
+                        for num, tok, dt, val, fn in function_params:
+                            if fn == parent_node.name:
+                                if num > num_params:
+                                    print(num, tok, dt, val, fn)
+                                    if val != None:
+                                        continue
+                                    else:
+                                        semantic_error = True
+                                        break
+                    elif num_params > num_func:
+                        semantic_error = True
+
+                    for num, tok, dt, val, fn in function_params:
+                        for param_num, param_tok, param_dt, param_fn in function_call_params:
+                            if param_fn == fn:
+                                if param_num == num:
+                                    if param_dt != 'string' and dt == 'string' or param_dt == 'string' and dt != 'string':
+                                        semantic_error = True
+                                        break
+                        if semantic_error:
+                            break
+
+                    if semantic_error:
+                        semantic_error_node = Node(token, 'Semantic error! Data type in function call!')
+                        current_node.add_child(semantic_error_node)
+                        break
+
                 if parent_node.type == 'ForLoop':
                     temp_list = []
                     temp_list.extend(current_node.children)
@@ -497,17 +580,22 @@ def build_syntax_tree(tokens):
                             sum_semicolon += 1
                         else:
                             sum_etc += 1
+
                     if sum_semicolon != 2:
                         syntax_error_node = Node(token, f'Syntax error! ForLoop')
                         current_node.add_child(syntax_error_node)
                         break
+
                 current_node = param_stack.pop()
+
                 if current_node.type == 'Function Call':
                     current_node = function_stack.pop()
+
                 if current_node.type == 'ForLoop':
                     for var, scope in variable_scope:
                         if scope == 'for':
                             variable_scope.remove((var, scope))
+
                 if current_node.type == 'Method f' or current_node.type == 'Object':
                     if len(param_stack) != 0:
                         current_node = param_stack.pop()
@@ -519,30 +607,36 @@ def build_syntax_tree(tokens):
                     semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
                     current_node.add_child(semantic_error_node)
                     break
+
             if current_node.data_type in ('float', 'double', 'long double'):
                 if token_type in ('STRING', 'BOOLEAN'):
                     semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
                     current_node.add_child(semantic_error_node)
                     break
+
             if current_node.data_type in ('signed char', 'char', 'unsigned char', 'wchar_t', 'char8_t', 'char16_t', 'char32_t'):
                 if token_type in ('FLOAT', 'INTEGER', 'BOOLEAN'):
                     semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
                     current_node.add_child(semantic_error_node)
                     break
+
                 if token_type == 'STRING' and token.startswith('"') and len(token) > 3:
                     semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
                     current_node.add_child(semantic_error_node)
                     break
+
             if current_node.data_type == 'string':
                 if token_type in ('FLOAT', 'INTEGER', 'BOOLEAN'):
                     semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
                     current_node.add_child(semantic_error_node)
                     break
+
             if current_node.data_type == 'bool':
                 if token_type in ('FLOAT', 'INTEGER', 'STRING'):
                     semantic_error_node = Node(token, f'Semantic error! Type {current_node.data_type}')
                     current_node.add_child(semantic_error_node)
                     break
+
             if token_type == 'INTEGER':
                 var_node = Node(token, 'Value', 'int')
                 current_node.add_child(var_node)
@@ -559,8 +653,10 @@ def build_syntax_tree(tokens):
             if len(io_stack) != 0:
                 current_node = io_stack.pop()
             sum = 0
+
             for i in io_stack:
                 sum += 1
+
             if sum > 0:
                 while sum != 0:
                     current_node = io_stack.pop()

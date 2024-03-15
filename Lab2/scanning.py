@@ -98,20 +98,20 @@ def tokenize(code):
                 current_token = ''
             else:
                 tokens.append((char, line_number))
-        elif char.isalnum() or char == '_':
-            current_token += char
         elif char.isdigit() and i + 1 < len(code) and code[i + 1] in ('e', 'E'):
             current_token += char
             current_token += code[i + 1]
             i += 1
-            if i + 1 < len(code) and code[i + 1] in ('+', '-'):
-                current_token += code[i + 1]
-                i += 1
-            while i + 1 < len(code) and code[i + 1].isdigit():
-                current_token += code[i + 1]
-                i += 1
-            tokens.append((current_token, line_number))
-            current_token = ''
+            if i + 1 < len(code) and code[i+1] in ('+', '-'):
+                current_token += code[i+1]
+                i+= 1
+                while i + 1 < len(code) and code[i+1].isdigit():
+                    current_token += code[i+1]
+                    i += 1
+                tokens.append((current_token, line_number))
+                current_token = ''
+        elif char.isalnum() or char == '_':
+            current_token += char
         elif char.isdigit() and current_token.endswith(('l', 'L', 'u', 'U')):
             tokens.append((current_token[:-1], line_number))
             tokens.append((current_token[-1], line_number))
