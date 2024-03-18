@@ -786,6 +786,15 @@ def build_syntax_tree(tokens):
                     current_node.add_child(syntax_error_node)
                     break
 
+            # if len(std_stack) != 0:
+            #     sum = 0
+            #     for i in std_stack:
+            #         sum += 1
+            #     if sum > 0:
+            #         while sum != 0:
+            #             current_node = std_stack.pop()
+            #             sum -= 1
+
             if len(variable_stack) != 0:
                 sum = 0
                 for i in variable_stack:
@@ -800,11 +809,25 @@ def build_syntax_tree(tokens):
                 current_node = std_stack.pop()
             sum_std = 0
             for i in std_stack:
-                sum_std += 1
+                if current_node.type in ('Cin', 'Cout'):
+                    sum_std += 1
             if sum_std > 0:
                 while sum_std != 0:
                     current_node = std_stack.pop()
                     sum_std -= 1
+
+            # if current_node.type in ('Cin', 'Cout'):
+            #     if len(std_stack) != 0:
+            #         current_node = std_stack.pop()
+            #     sum_std = 0
+            #     for i in std_stack:
+            #         if current_node.type in ('Cin', 'Cout'):
+            #             sum_std += 1
+            #     if sum_std > 0:
+            #         while sum_std != 0:
+            #             current_node = std_stack.pop()
+            #             sum_std -= 1
+
 
             if current_node.type == 'Object':
                 if len(object_stack) != 0:
@@ -945,57 +968,18 @@ def build_syntax_tree(tokens):
             current_node.add_child(method_node)
             current_node = method_node
 
-        if token in ('endl'):
+        if token == 'endl':
             method_node = Node(token, 'Endl')
             if len(std_stack) != 0:
                 current_node = std_stack.pop()
                 current_node.add_child(method_node)
 
-        # if token in ('cout', 'endl', 'cin') and token_type == "METHOD":
-        #     method_node = Node(token, "Method")
-        #     current_node.add_child(method_node)
-        #     current_node = std_stack.pop()
-        #     if len(std_stack) != 0:
-        #         current_node = std_stack.pop()
-        #     sum = 0
-        #     for i in std_stack:
-        #         sum += 1
-        #     if sum > 0:
-        #         while sum != 0:
-        #             current_node = std_stack.pop()
-        #             sum -= 1
-        #
-        # if token in ('cout', 'endl', 'cin') and token_type == "KEYWORD":
-        #     method_node = Node(token, "Method")
-        #     current_node.add_child(method_node)
-        #     # current_node = io_stack.pop()
-        #     if len(io_stack) != 0:
-        #         current_node = io_stack.pop()
-        #     sum = 0
-        #     for i in io_stack:
-        #         sum += 1
-        #     if sum > 0:
-        #         while sum != 0:
-        #             current_node = io_stack.pop()
-        #             sum -= 1
 
         if token == "<<" or token == ">>":
             io_operator_node = Node(token, 'Operator Input')
-            # io_stack.append(current_node)
             current_node.add_child(io_operator_node)
-            # current_node = io_operator_node
-            # current_node.add_child(io_operator_node)
 
         if token_type == 'ARITHMETIC OPERATOR':
-            # print(token)
-            # if token == '+':
-            #     print(left_operand.name, right_operand.name)
-            #     if left_operand.data_type in ('int', 'long long', 'long', 'short', 'unsigned short', 'unsigned int', \
-            #                               'unsigned long long', 'unsigned long') and right_operand.data_type in ('signed char', 'char', 'unsigned char', 'wchar_t', 'char8_t', 'char16_t', 'char32_t'):
-            #         semantic_error_node = Node("Incompatible types for addition", "Semantic Error")
-            #         current_node.add_child(semantic_error_node)
-            #         break
-
             arithmetic_operator_node = Node(token, "Operator")
             current_node.add_child(arithmetic_operator_node)
 

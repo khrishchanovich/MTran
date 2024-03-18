@@ -3,7 +3,8 @@
 int main() {
     std::string text = "Hello, world!";
     std::string pattern = "world";
-    int n = 13;
+    int n;
+    std::cin >> n;
     int m = 5;
     int pos = -1;
     for (int i = 0; i <= n - m; ++i) {

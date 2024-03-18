@@ -212,6 +212,10 @@ class Translator:
                 self.depth -= 1
                 self.code_python += '\n'
 
+    def cin_translator(self, node):
+        for member_cin in node.children:
+            if member_cin.type == 'Variable' and member_cin.data_type == 'int':
+                self.code_python += f'{member_cin.name} = int({self.temp_list})'
 
     def block_translator(self, node):
         parent_node = node.parent
@@ -275,6 +279,10 @@ class Translator:
                 self.code_python += '\t' * self.depth
                 self.code_python += 'print('
                 self.print_translator(member_block)
+            if member_block.type == 'Cin':
+                self.code_python += '\t' * self.depth
+                self.temp_list = 'input()'
+                self.cin_translator(member_block)
             if member_block.type == 'Endl':
                 if self.code_python[-2] == ',' and self.code_python[-1] == ' ':
                     self.code_python = self.code_python[:-2] + ')'

@@ -19,8 +19,12 @@
                 |- Value: str "world"
             |- Statement: ;
             |- Declare: int n
-                |- Assignment: =
-                |- Value: int 13
+            |- Statement: ;
+            |- StdNamespace: std
+            |- Colon: ::
+            |- Cin: cin
+                |- Operator Input: >>
+                |- Variable: int n
             |- Statement: ;
             |- Declare: int m
                 |- Assignment: =
