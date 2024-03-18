@@ -1,120 +1,132 @@
 |- ProgramType: Program
     |- PreprocessorDirective: #include
         |- Header file: <iostream>
-    |- Class: Rectangle
-        |- Block: Class
-            |- AccessModifier: private
-                |- Declare: int width
-                |- Statement: ;
-                |- Declare: int height
-                |- Statement: ;
-            |- AccessModifier: public
-                |- Constructure: Rectangle
-                    |- Parameters: Parameters
-                        |- Declare: int w
-                        |- Comma: ,
-                        |- Declare: int h
-                    |- Block: Constructure
-                |- Function: void setWidth
-                    |- Parameters: Parameters
-                        |- Declare: int w
-                            |- Assignment: =
-                            |- Value: int 4
-                    |- Block: void
-                        |- Variable: int width
-                            |- Assignment: =
-                            |- Variable: int w
-                        |- Statement: ;
-                |- Function: void setHeight
-                    |- Parameters: Parameters
-                        |- Declare: int h
-                    |- Block: void
-                        |- Variable: int height
-                            |- Assignment: =
-                            |- Variable: int h
-                        |- Statement: ;
-    |- Statement: ;
+    |- PreprocessorDirective: #include
+        |- Header file: <string>
     |- Function: int main
         |- Parameters: Parameters
         |- Block: int
-            |- Class: Rectangle
-                |- Object: rect
-                    |- Parameters: Parameters
-                        |- Value: int 5
-                        |- Comma: ,
-                        |- Value: int 3
+            |- StdNamespace: std
+            |- Colon: ::
+            |- Declare: string text
+                |- Assignment: =
+                |- Value: str "Hello, world!"
             |- Statement: ;
             |- StdNamespace: std
-                |- Colon: ::
-                    |- Method: cout
-                    |- Operator Input: <<
-                        |- Value: str "Width: "
-                    |- Operator Input: <<
-                        |- Object: rect
-                            |- DotOperator: .
-                            |- Method f: getWidth
+            |- Colon: ::
+            |- Declare: string pattern
+                |- Assignment: =
+                |- Value: str "world"
+            |- Statement: ;
+            |- Declare: int n
+                |- Assignment: =
+                |- Value: int 13
+            |- Statement: ;
+            |- Declare: int m
+                |- Assignment: =
+                |- Value: int 5
+            |- Statement: ;
+            |- Declare: int pos
+                |- Assignment: =
+                |- Operator: -
+                |- Value: int 1
+            |- Statement: ;
+            |- ForLoop: for
+                |- Parameters: Parameters
+                    |- Declare: int i
+                        |- Assignment: =
+                        |- Value: int 0
+                    |- Statement: ;
+                    |- Variable: int i
+                        |- Comparison: <=
+                        |- Variable: int n
+                            |- Operator: -
+                            |- Variable: int m
+                    |- Statement: ;
+                    |- Operator: ++
+                    |- Variable: int i
+                |- Block: ForLoop
+                    |- Declare: int j
+                    |- Statement: ;
+                    |- ForLoop: for
+                        |- Parameters: Parameters
+                            |- Variable: int j
+                                |- Assignment: =
+                                |- Value: int 0
+                            |- Statement: ;
+                            |- Variable: int j
+                                |- Comparison: <
+                                |- Variable: int m
+                            |- Statement: ;
+                            |- Operator: ++
+                            |- Variable: int j
+                        |- Block: ForLoop
+                            |- IfStatement: if
                                 |- Parameters: Parameters
+                                    |- Variable: string text
+                                        |- Square Block: text
+                                            |- Variable: int i
+                                                |- Operator: +
+                                                |- Variable: int j
+                                        |- End Square Block: ]
+                                        |- Comparison: !=
+                                        |- Variable: string pattern
+                                            |- Square Block: pattern
+                                                |- Variable: int j
+                                            |- End Square Block: ]
+                                |- Block: IfStatement
+                                    |- Break: break
+                                    |- Statement: ;
+                                |- End Block: if
+                        |- End Block: for
+                    |- IfStatement: if
+                        |- Parameters: Parameters
+                            |- Variable: int j
+                                |- Comparison: ==
+                                |- Variable: int m
+                        |- Block: IfStatement
+                            |- Variable: int pos
+                                |- Assignment: =
+                                |- Variable: int i
+                            |- Statement: ;
+                            |- Break: break
+                            |- Statement: ;
+                        |- End Block: if
+                |- End Block: for
+            |- IfStatement: if
+                |- Parameters: Parameters
+                    |- Variable: int pos
+                        |- Comparison: !=
+                        |- Operator: -
+                        |- Value: int 1
+                |- Block: IfStatement
+                    |- StdNamespace: std
+                    |- Colon: ::
+                    |- Cout: cout
+                        |- Operator Input: <<
+                        |- Value: str "Pattern found at position: "
+                        |- Operator Input: <<
+                        |- Variable: int pos
                             |- Operator Input: <<
-                                |- StdNamespace: std
-                                    |- Colon: ::
-                                        |- Method: endl
-            |- Statement: ;
-            |- StdNamespace: std
-                |- Colon: ::
-                    |- Method: cout
-                    |- Operator Input: <<
-                        |- Value: str "Height: "
-                    |- Operator Input: <<
-                        |- Object: rect
-                            |- DotOperator: .
-                            |- Method f: getHeight
-                                |- Parameters: Parameters
-                            |- Operator Input: <<
-                                |- StdNamespace: std
-                                    |- Colon: ::
-                                        |- Method: endl
-            |- Statement: ;
-            |- StdNamespace: std
-                |- Colon: ::
-                    |- Method: cout
-                    |- Operator Input: <<
-                        |- Value: str "Area of the rectangle: "
-                    |- Operator Input: <<
-                        |- Object: rect
-                            |- DotOperator: .
-                            |- Method f: area
-                                |- Parameters: Parameters
-                            |- Operator Input: <<
-                                |- StdNamespace: std
-                                    |- Colon: ::
-                                        |- Method: endl
-            |- Statement: ;
-            |- Object: rect
-                |- DotOperator: .
-                |- Function Call: void setWidth
-                    |- Parameters: Parameters
-            |- Statement: ;
-            |- Object: rect
-                |- DotOperator: .
-                |- Function Call: void setHeight
-                    |- Parameters: Parameters
-                        |- Value: int 4
-            |- Statement: ;
-            |- StdNamespace: std
-                |- Colon: ::
-                    |- Method: cout
-                    |- Operator Input: <<
-                        |- Value: str "Updated area of the rectangle: "
-                    |- Operator Input: <<
-                        |- Object: rect
-                            |- DotOperator: .
-                            |- Method f: area
-                                |- Parameters: Parameters
-                            |- Operator Input: <<
-                                |- StdNamespace: std
-                                    |- Colon: ::
-                                        |- Method: endl
-            |- Statement: ;
+                            |- StdNamespace: std
+                            |- Colon: ::
+                        |- Statement: ;
+                    |- Endl: endl
+                    |- Statement: ;
+                |- End Block: if
+            |- ElseStatement: else
+                |- Block: ElseStatement
+                    |- StdNamespace: std
+                    |- Colon: ::
+                    |- Cout: cout
+                        |- Operator Input: <<
+                        |- Value: str "Pattern not found."
+                        |- Operator Input: <<
+                        |- StdNamespace: std
+                        |- Colon: ::
+                    |- Endl: endl
+                    |- Statement: ;
+                |- End Block: else
             |- ReturnStatement: return
                 |- Value: int 0
-                |- Statement: ;
+        |- End Block: main

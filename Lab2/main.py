@@ -14,6 +14,7 @@ def balance_check(code):
     single_quotes_count = 0
     parentheses_count = 0
     curly_braces_count = 0
+    square_braces_count = 0
     comment_open_count = 0
     comment_close_count = 0
 
@@ -34,6 +35,10 @@ def balance_check(code):
             parentheses_count += 1
         elif char == ')' and not in_comment and not in_string:
             parentheses_count -= 1
+        elif char == '[' and not in_comment and not in_string:
+            square_braces_count += 1
+        elif char == ']' and not in_comment and not in_string:
+            square_braces_count -= 1
         elif char == '{' and not in_comment and not in_string:
             curly_braces_count += 1
         elif char == '}' and not in_comment and not in_string:
@@ -53,6 +58,7 @@ def balance_check(code):
             single_quotes_count % 2 == 0 and
             parentheses_count == 0 and
             curly_braces_count == 0 and
+            square_braces_count == 0 and
             comment_open_count == comment_close_count):
         return True, errors
     else:
@@ -97,7 +103,7 @@ def lexer():
             table[token] = classification
 
             token_classification_list.append((token, classification, token_lines[i]))
-            #print(token, classification)
+
         output = ''
         output += "+----------------------------------------------------------------+\n"
         output += "|   №  |  Элемент               |   Информация                   |\n"
