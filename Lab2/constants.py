@@ -12,6 +12,7 @@ keywords = {
     'do': 'KEYWORD',
     'while': 'KEYWORD',
     'for': 'KEYWORD',
+    'else if': 'KEYWORD',
     'if': 'KEYWORD',
     'else': 'KEYWORD',
     'return': 'KEYWORD',

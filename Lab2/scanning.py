@@ -165,6 +165,10 @@ def tokenize(code):
             combined_tokens.append(('<<', token_lines[i]))
             i += 2
 
+        elif list_tokens[i:i+2] == ['else', 'if']:
+            combined_tokens.append(('else if', token_lines[i]))
+            i += 2
+
         elif list_tokens[i:i + 2] == ['>', '>']:
             combined_tokens.append(('>>', token_lines[i]))
             i += 2

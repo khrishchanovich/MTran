@@ -1,39 +1,31 @@
 |- ProgramType: Program
     |- PreprocessorDirective: #include
         |- Header file: <iostream>
-    |- PreprocessorDirective: #include
-        |- Header file: <string>
     |- Function: int main
         |- Parameters: Parameters
         |- Block: int
-            |- StdNamespace: std
-            |- Colon: ::
-            |- Declare: string text
+            |- Declare Array: int arr
+                |- Square Block: arr
+                |- End Square Block: ]
                 |- Assignment: =
-                |- Value: str "Hello, world!"
-            |- Statement: ;
-            |- StdNamespace: std
-            |- Colon: ::
-            |- Declare: string pattern
-                |- Assignment: =
-                |- Value: str "world"
+                |- Block: Declare Array
+                    |- Value: int 64
+                    |- Comma: ,
+                    |- Value: int 25
+                    |- Comma: ,
+                    |- Value: int 12
+                    |- Comma: ,
+                    |- Value: int 22
+                    |- Comma: ,
+                    |- Value: int 11
+                |- End Block: arr
             |- Statement: ;
             |- Declare: int n
-            |- Statement: ;
-            |- StdNamespace: std
-            |- Colon: ::
-            |- Cin: cin
-                |- Operator Input: >>
-                |- Variable: int n
-            |- Statement: ;
-            |- Declare: int m
                 |- Assignment: =
-                |- Value: int 5
-            |- Statement: ;
-            |- Declare: int pos
-                |- Assignment: =
-                |- Operator: -
-                |- Value: int 1
+                |- Array: int arr
+                    |- DotOperator: .
+                    |- Method f: size
+                        |- Parameters: Parameters
             |- Statement: ;
             |- ForLoop: for
                 |- Parameters: Parameters
@@ -42,95 +34,122 @@
                         |- Value: int 0
                     |- Statement: ;
                     |- Variable: int i
-                        |- Comparison: <=
+                        |- Comparison: <
                         |- Variable: int n
                             |- Operator: -
-                            |- Variable: int m
+                            |- Value: int 1
                     |- Statement: ;
                     |- Operator: ++
                     |- Variable: int i
                 |- Block: ForLoop
-                    |- Declare: int j
-                    |- Statement: ;
                     |- ForLoop: for
                         |- Parameters: Parameters
-                            |- Variable: int j
+                            |- Declare: int j
                                 |- Assignment: =
                                 |- Value: int 0
                             |- Statement: ;
                             |- Variable: int j
                                 |- Comparison: <
-                                |- Variable: int m
+                                |- Variable: int n
+                                    |- Operator: -
+                                    |- Variable: int i
+                                        |- Operator: -
+                                        |- Value: int 1
                             |- Statement: ;
                             |- Operator: ++
                             |- Variable: int j
                         |- Block: ForLoop
                             |- IfStatement: if
                                 |- Parameters: Parameters
-                                    |- Variable: string text
-                                        |- Square Block: text
-                                            |- Variable: int i
-                                                |- Operator: +
-                                                |- Variable: int j
+                                    |- Array: int arr
+                                        |- Square Block: arr
+                                            |- Variable: int j
                                         |- End Square Block: ]
-                                        |- Comparison: !=
-                                        |- Variable: string pattern
-                                            |- Square Block: pattern
+                                        |- Comparison: >
+                                        |- Array: int arr
+                                            |- Square Block: arr
                                                 |- Variable: int j
+                                                    |- Operator: +
+                                                    |- Value: int 1
                                             |- End Square Block: ]
                                 |- Block: IfStatement
-                                    |- Break: break
+                                    |- Declare: int temp
+                                        |- Assignment: =
+                                        |- Array: int arr
+                                            |- Square Block: arr
+                                                |- Variable: int j
+                                            |- End Square Block: ]
+                                    |- Statement: ;
+                                    |- Array: int arr
+                                        |- Square Block: arr
+                                            |- Variable: int j
+                                        |- End Square Block: ]
+                                        |- Assignment: =
+                                        |- Array: int arr
+                                            |- Square Block: arr
+                                                |- Variable: int j
+                                                    |- Operator: +
+                                                    |- Value: int 1
+                                            |- End Square Block: ]
+                                    |- Statement: ;
+                                    |- Array: int arr
+                                        |- Square Block: arr
+                                            |- Variable: int j
+                                                |- Operator: +
+                                                |- Value: int 1
+                                        |- End Square Block: ]
+                                        |- Assignment: =
+                                        |- Variable: int temp
                                     |- Statement: ;
                                 |- End Block: if
                         |- End Block: for
-                    |- IfStatement: if
-                        |- Parameters: Parameters
-                            |- Variable: int j
-                                |- Comparison: ==
-                                |- Variable: int m
-                        |- Block: IfStatement
-                            |- Variable: int pos
-                                |- Assignment: =
-                                |- Variable: int i
-                            |- Statement: ;
-                            |- Break: break
-                            |- Statement: ;
-                        |- End Block: if
                 |- End Block: for
-            |- IfStatement: if
+            |- StdNamespace: std
+            |- Colon: ::
+            |- Cout: cout
+                |- Operator Input: <<
+                |- Value: str "Sorted array: "
+                |- Operator Input: <<
+                |- StdNamespace: std
+                |- Colon: ::
+                |- Endl: endl
+            |- Statement: ;
+            |- ForLoop: for
                 |- Parameters: Parameters
-                    |- Variable: int pos
-                        |- Comparison: !=
-                        |- Operator: -
-                        |- Value: int 1
-                |- Block: IfStatement
+                    |- Declare: int i
+                        |- Assignment: =
+                        |- Value: int 0
+                    |- Statement: ;
+                    |- Variable: int i
+                        |- Comparison: <
+                        |- Variable: int n
+                    |- Statement: ;
+                    |- Operator: ++
+                    |- Variable: int i
+                |- Block: ForLoop
                     |- StdNamespace: std
                     |- Colon: ::
                     |- Cout: cout
                         |- Operator Input: <<
-                        |- Value: str "Pattern found at position: "
-                        |- Operator Input: <<
-                        |- Variable: int pos
+                        |- Array: int arr
+                            |- Square Block: arr
+                                |- Variable: int i
+                            |- End Square Block: ]
                             |- Operator Input: <<
                             |- StdNamespace: std
                             |- Colon: ::
-                        |- Statement: ;
-                    |- Endl: endl
+                            |- Endl: endl
                     |- Statement: ;
-                |- End Block: if
-            |- ElseStatement: else
-                |- Block: ElseStatement
-                    |- StdNamespace: std
-                    |- Colon: ::
-                    |- Cout: cout
-                        |- Operator Input: <<
-                        |- Value: str "Pattern not found."
-                        |- Operator Input: <<
-                        |- StdNamespace: std
-                        |- Colon: ::
-                    |- Endl: endl
-                    |- Statement: ;
-                |- End Block: else
+                |- End Block: for
+            |- StdNamespace: std
+            |- Colon: ::
+            |- Cout: cout
+                |- Operator Input: <<
+                |- StdNamespace: std
+                |- Colon: ::
+                |- Endl: endl
+            |- Statement: ;
             |- ReturnStatement: return
                 |- Value: int 0
+                |- Statement: ;
         |- End Block: main

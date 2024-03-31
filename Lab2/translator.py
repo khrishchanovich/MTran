@@ -1,20 +1,27 @@
 from parser import parser
-
+from function import write_output_to_file
 
 class Translator:
     def __init__(self):
         self.code_python = ''
         self.private_member = []
         self.variable_list = []
+        self.init_list = []
         self.temp_list = ''
+        self.init_code = []
         self.in_class = False
         self.in_if = False
+        self.in_for = False
+        self.in_access = False
+        self.in_init = False
         self.depth = 0
         self.temp_depth = 0
         self.count_compare = 0
 
     def declare_translator(self, node):
-        self.code_python += '\t' * self.depth
+        if self.code_python[-1] == '\n':
+            self.code_python += '\t' * self.depth
+        # self.init_code += '\t' * self.depth
         variable_exists = False
         for name, _ in self.variable_list:
             if node.name == name:
@@ -30,7 +37,11 @@ class Translator:
         for name, check in self.variable_list:
             if node.name == name:
                 if check:
-                    self.code_python += f'self.{node.name}'
+                    if not self.in_access:
+                        self.code_python += f'self.{node.name}'
+                    else:
+                        self.init_code.append('self.'+node.name)
+                        self.in_access = False
                 else:
                     self.code_python += f'{node.name}'
                 break
@@ -41,7 +52,7 @@ class Translator:
                 self.code_python += f' {assignment_node} '
             if member_declare.type == 'Value':
                 value_node = member_declare.name
-                self.code_python += f' {value_node}'
+                self.code_python += f'{value_node}'
             if member_declare.type == 'Variable':
                 self.declare_translator(member_declare)
             if member_declare.type == 'Operator':
@@ -50,8 +61,12 @@ class Translator:
             if member_declare.type == 'DotOperator':
                 self.code_python += member_declare.name
             if member_declare.type == 'Method f':
-                self.code_python += member_declare.name
-                self.function_translator(member_declare)
+                if member_declare.name == 'size':
+                    temp_len = len(node.name) + 1
+                    self.code_python = self.code_python[:-temp_len - 1] + f' len({node.name})'
+                else:
+                    self.code_python += member_declare.name
+                    self.function_translator(member_declare)
             if member_declare.type == 'Comparison':
                 if self.in_for and not self.in_if:
                     self.code_python = self.code_python[:-1]
@@ -78,6 +93,8 @@ class Translator:
             if member_param.type == 'Variable':
                 self.declare_translator(member_param)
             if member_param.type == 'Declare':
+                if self.in_init:
+                    self.init_list.append(member_param.name)
                 if self.in_class:
                     self.in_class = False
                     self.declare_translator(member_param)
@@ -110,6 +127,8 @@ class Translator:
                 self.code_python += f':\n'
                 self.block_translator(member_function)
             if member_function.type == 'End Block':
+                if self.in_init:
+                    self.in_init = False
                 self.depth -= 1
                 self.code_python += '\n'
 
@@ -126,15 +145,19 @@ class Translator:
     def access_specifier_translator(self, node):
         for member_access in node.children:
             if member_access.type == 'Declare':
+                self.in_access = True
                 self.declare_translator(member_access)
             if member_access.type == 'Statement':
                 self.code_python += '\n'
             if member_access.type == 'Constructure':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.code_python += f'def __init__'
+                self.in_init = True
                 self.function_translator(member_access)
             if member_access.type == 'Function':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.code_python += f'def {member_access.name}'
                 self.function_translator(member_access)
 
@@ -170,6 +193,10 @@ class Translator:
             if member_print.type == 'Array':
                 self.declare_translator(member_print)
                 self.code_python += ', '
+            if member_print.type == 'Operator':
+                if self.code_python[-2] == ',' and self.code_python[-1] == ' ':
+                    self.code_python = self.code_python[:-2] + member_print.name
+                # self.code_python += member_print.name
 
     def for_param_translator(self, node):
         count = 0
@@ -218,6 +245,12 @@ class Translator:
                 self.code_python += f'{member_cin.name} = int({self.temp_list})'
 
     def block_translator(self, node):
+        for member, value in zip(self.init_code, self.init_list):
+            if self.in_init:
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
+                self.code_python += f'{member} = {value}\n'
+
         parent_node = node.parent
         for member_block in node.children:
             if member_block.name in ('public', 'protected', 'private'):
@@ -228,7 +261,8 @@ class Translator:
                 if member_block.children:
                     self.declare_translator(member_block)
                 else:
-                    self.code_python += '\t' * self.depth
+                    if self.code_python[-1] == '\n':
+                        self.code_python += '\t' * self.depth
 
                     variable_exists = False
                     for name, _ in self.variable_list:
@@ -260,27 +294,36 @@ class Translator:
             if member_block.type == 'Array':
                 self.declare_translator(member_block)
             if member_block.type == 'Statement':
+                if self.code_python[-2] == ',' and self.code_python[-1] == ' ':
+                    self.code_python = self.code_python[:-2] + ')'
+                if self.code_python[-1] == '(':
+                    self.code_python += ')'
+                # self.init_code += '\n'
                 self.code_python += '\n'
             if member_block.type == 'ReturnStatement':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 if parent_node.name != 'main':
                     self.code_python += f'{member_block.name} '
                     self.return_translator(member_block)
                 else:
                     continue
             if member_block.type == 'Function Call':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.code_python += member_block.name
                 self.function_translator(member_block)
             if member_block.type == 'Class':
                 self.temp_list = member_block
                 self.class_translator(member_block)
             if member_block.type == 'Cout':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.code_python += 'print('
                 self.print_translator(member_block)
             if member_block.type == 'Cin':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.temp_list = 'input()'
                 self.cin_translator(member_block)
             if member_block.type == 'Endl':
@@ -289,25 +332,36 @@ class Translator:
                 else:
                     self.code_python += ')'
             if member_block.type == 'Object':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.code_python += member_block.name
                 self.object_translator(member_block)
             if member_block.type == 'ForLoop':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.in_for = True
                 self.code_python += 'for '
                 self.for_translator(member_block)
             if member_block.type == 'IfStatement':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.in_if = True
                 self.code_python += 'if '
                 self.if_translator(member_block)
+            if member_block.type == 'ElseIfStatement':
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
+                self.in_if = True
+                self.code_python += 'elif '
+                self.if_translator(member_block)
             if member_block.type == 'ElseStatement':
-                self.code_python += '\t' * self.depth
-                self.code_python += 'else '
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
+                self.code_python += 'else'
                 self.if_translator(member_block)
             if member_block.type == 'Break':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.code_python += 'break'
             if member_block.type == 'Value':
                 self.declare_translator(member_block)
@@ -326,7 +380,8 @@ class Translator:
                 self.in_class = False
                 self.code_python += '\n'
             if member_class.type == 'Object':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.code_python += f'{member_class.name} =  {self.temp_list.name}'
                 self.function_translator(member_class)
 
@@ -344,14 +399,17 @@ class Translator:
                     self.code_python += f'if __name__ == "__main__"'
                     self.main_translator(member_root)
                 else:
-                    self.code_python += '\t' * self.depth
+                    if self.code_python[-1] == '\n':
+                        self.code_python += '\t' * self.depth
                     self.code_python += f'def {member_root.name}'
                     self.function_translator(member_root)
             if member_root.type == 'Declare':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.declare_translator(member_root)
             if member_root.type == 'Declare array':
-                self.code_python += '\t' * self.depth
+                if self.code_python[-1] == '\n':
+                    self.code_python += '\t' * self.depth
                 self.declare_translator(member_root)
             if 'Semantic' in member_root.type:
                 self.code_python += member_root.type
@@ -360,9 +418,8 @@ class Translator:
 
 translator = Translator()
 translator.translator(parser())
-print(translator.code_python)
-exec(translator.code_python)
+codeInString = translator.code_python
+write_output_to_file(codeInString, 'output_translator.py')
+codeObject = compile(codeInString, 'output_translator.py', 'exec')
 
-
-
-
+exec(codeObject)
