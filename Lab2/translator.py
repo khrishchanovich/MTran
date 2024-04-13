@@ -51,8 +51,11 @@ class Translator:
                 assignment_node = member_declare.name
                 self.code_python += f' {assignment_node} '
             if member_declare.type == 'Value':
-                value_node = member_declare.name
-                self.code_python += f'{value_node}'
+                if member_declare.name == "' '":
+                    self.code_python += f', {member_declare.name}'
+                else:
+                    value_node = member_declare.name
+                    self.code_python += f'{value_node}'
             if member_declare.type == 'Variable':
                 self.declare_translator(member_declare)
             if member_declare.type == 'Operator':
@@ -84,8 +87,17 @@ class Translator:
                 self.code_python += ']'
             if member_declare.type == 'Array':
                 self.declare_translator(member_declare)
-            if 'Semantic' in member_declare.type:
+            if 'Semantic' in member_declare.type or 'SEMANTIC' in member_declare.type:
+                print(self.code_python)
                 self.code_python += member_declare.type
+                break
+            if 'Syntax' in member_declare.type or 'SYNTAX' in member_declare.type:
+                self.code_python += member_declare.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_declare.type or 'LEXICAL' in member_declare.type:
+                self.code_python += member_declare.type
+                print(self.code_python)
                 break
 
     def parameters_translator(self, node):
@@ -107,6 +119,18 @@ class Translator:
                 self.code_python += member_param.name
             if member_param.type == 'Value':
                 self.declare_translator(member_param)
+            if 'Semantic' in member_param.type or 'SEMANTIC' in member_param.type:
+                print(self.code_python)
+                self.code_python += member_param.type
+                break
+            if 'Syntax' in member_param.type or 'SYNTAX' in member_param.type:
+                self.code_python += member_param.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_param.type or 'LEXICAL' in member_param.type:
+                self.code_python += member_param.type
+                print(self.code_python)
+                break
 
     def function_translator(self, node):
         for member_function in node.children:
@@ -131,6 +155,18 @@ class Translator:
                     self.in_init = False
                 self.depth -= 1
                 self.code_python += '\n'
+            if 'Semantic' in member_function.type or 'SEMANTIC' in member_function.type:
+                print(self.code_python)
+                self.code_python += member_function.type
+                break
+            if 'Syntax' in member_function.type or 'SYNTAX' in member_function.type:
+                self.code_python += member_function.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_function.type or 'LEXICAL' in member_function.type:
+                self.code_python += member_function.type
+                print(self.code_python)
+                break
 
     def main_translator(self, node):
         for member_function in node.children:
@@ -141,6 +177,18 @@ class Translator:
             if member_function.type == 'End Block':
                 self.depth -= 1
                 self.code_python += '\n'
+            if 'Semantic' in member_function.type or 'SEMANTIC' in member_function.type:
+                print(self.code_python)
+                self.code_python += member_function.type
+                break
+            if 'Syntax' in member_function.type or 'SYNTAX' in member_function.type:
+                self.code_python += member_function.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_function.type or 'LEXICAL' in member_function.type:
+                self.code_python += member_function.type
+                print(self.code_python)
+                break
 
     def access_specifier_translator(self, node):
         for member_access in node.children:
@@ -160,6 +208,18 @@ class Translator:
                     self.code_python += '\t' * self.depth
                 self.code_python += f'def {member_access.name}'
                 self.function_translator(member_access)
+            if 'Semantic' in member_access.type or 'SEMANTIC' in member_access.type:
+                print(self.code_python)
+                self.code_python += member_access.type
+                break
+            if 'Syntax' in member_access.type or 'SYNTAX' in member_access.type:
+                self.code_python += member_access.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_access.type or 'LEXICAL' in member_access.type:
+                self.code_python += member_access.type
+                print(self.code_python)
+                break
 
     def return_translator(self, node):
         for member_return in node.children:
@@ -169,6 +229,18 @@ class Translator:
                 self.code_python += '\n'
             if member_return.type == 'Value':
                 self.declare_translator(member_return)
+            if 'Semantic' in member_return.type or 'SEMANTIC' in member_return.type:
+                print(self.code_python)
+                self.code_python += member_return.type
+                break
+            if 'Syntax' in member_return.type or 'SYNTAX' in member_return.type:
+                self.code_python += member_return.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_return.type or 'LEXICAL' in member_return.type:
+                self.code_python += member_return.type
+                print(self.code_python)
+                break
 
     def object_translator(self, node):
         for member_object in node.children:
@@ -177,6 +249,18 @@ class Translator:
             if member_object.type == 'Function Call':
                 self.code_python += member_object.name
                 self.function_translator(member_object)
+            if 'Semantic' in member_object.type or 'SEMANTIC' in member_object.type:
+                print(self.code_python)
+                self.code_python += member_object.type
+                break
+            if 'Syntax' in member_object.type or 'SYNTAX' in member_object.type:
+                self.code_python += member_object.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_object.type or 'LEXICAL' in member_object.type:
+                self.code_python += member_object.type
+                print(self.code_python)
+                break
 
     def print_translator(self, node):
         for member_print in node.children:
@@ -197,6 +281,18 @@ class Translator:
                 if self.code_python[-2] == ',' and self.code_python[-1] == ' ':
                     self.code_python = self.code_python[:-2] + member_print.name
                 # self.code_python += member_print.name
+            if 'Semantic' in member_print.type or 'SEMANTIC' in member_print.type:
+                print(self.code_python)
+                self.code_python += member_print.type
+                break
+            if 'Syntax' in member_print.type or 'SYNTAX' in member_print.type:
+                self.code_python += member_print.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_print.type or 'LEXICAL' in member_print.type:
+                self.code_python += member_print.type
+                print(self.code_python)
+                break
 
     def for_param_translator(self, node):
         count = 0
@@ -212,6 +308,18 @@ class Translator:
                     self.code_python += ' in range('
                     self.declare_translator(member_param)
                     self.code_python += ')'
+            if 'Semantic' in member_param.type or 'SEMANTIC' in member_param.type:
+                print(self.code_python)
+                self.code_python += member_param.type
+                break
+            if 'Syntax' in member_param.type or 'SYNTAX' in member_param.type:
+                self.code_python += member_param.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_param.type or 'LEXICAL' in member_param.type:
+                self.code_python += member_param.type
+                print(self.code_python)
+                break
 
     def for_translator(self, node):
         for member_for in node.children:
@@ -225,6 +333,18 @@ class Translator:
                 self.depth -= 1
                 self.in_for = False
                 self.code_python += '\n'
+            if 'Semantic' in member_for.type or 'SEMANTIC' in member_for.type:
+                print(self.code_python)
+                self.code_python += member_for.type
+                break
+            if 'Syntax' in member_for.type or 'SYNTAX' in member_for.type:
+                self.code_python += member_for.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_for.type or 'LEXICAL' in member_for.type:
+                self.code_python += member_for.type
+                print(self.code_python)
+                break
 
     def if_translator(self, node):
         for member_if in node.children:
@@ -238,11 +358,35 @@ class Translator:
                 self.in_if = False
                 self.depth -= 1
                 self.code_python += '\n'
+            if 'Semantic' in member_if.type or 'SEMANTIC' in member_if.type:
+                print(self.code_python)
+                self.code_python += member_if.type
+                break
+            if 'Syntax' in member_if.type or 'SYNTAX' in member_if.type:
+                self.code_python += member_if.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_if.type or 'LEXICAL' in member_if.type:
+                self.code_python += member_if.type
+                print(self.code_python)
+                break
 
     def cin_translator(self, node):
         for member_cin in node.children:
             if member_cin.type == 'Variable' and member_cin.data_type == 'int':
                 self.code_python += f'{member_cin.name} = int({self.temp_list})'
+            if 'Semantic' in member_cin.type or 'SEMANTIC' in member_cin.type:
+                print(self.code_python)
+                self.code_python += member_cin.type
+                break
+            if 'Syntax' in member_cin.type or 'SYNTAX' in member_cin.type:
+                self.code_python += member_cin.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_cin.type or 'LEXICAL' in member_cin.type:
+                self.code_python += member_cin.type
+                print(self.code_python)
+                break
 
     def block_translator(self, node):
         for member, value in zip(self.init_code, self.init_list):
@@ -295,11 +439,17 @@ class Translator:
                 self.declare_translator(member_block)
             if member_block.type == 'Statement':
                 if self.code_python[-2] == ',' and self.code_python[-1] == ' ':
-                    self.code_python = self.code_python[:-2] + ')'
+                    self.code_python = self.code_python[:-2] + ',end="")'
                 if self.code_python[-1] == '(':
                     self.code_python += ')'
                 # self.init_code += '\n'
                 self.code_python += '\n'
+            if member_block.type == 'Block':
+                self.code_python += '['
+                self.block_translator(member_block)
+            if member_block.type == 'End Block':
+                self.code_python += ']'
+                self.block_translator(member_block)
             if member_block.type == 'ReturnStatement':
                 if self.code_python[-1] == '\n':
                     self.code_python += '\t' * self.depth
@@ -367,6 +517,18 @@ class Translator:
                 self.declare_translator(member_block)
             if member_block.type == 'Comma':
                 self.code_python += ', '
+            if 'Semantic' in member_block.type or 'SEMANTIC' in member_block.type:
+                print(self.code_python)
+                self.code_python += member_block.type
+                break
+            if 'Syntax' in member_block.type or 'SYNTAX' in member_block.type:
+                self.code_python += member_block.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_block.type or 'LEXICAL' in member_block.type:
+                self.code_python += member_block.type
+                print(self.code_python)
+                break
 
 
     def class_translator(self, node):
@@ -384,6 +546,18 @@ class Translator:
                     self.code_python += '\t' * self.depth
                 self.code_python += f'{member_class.name} =  {self.temp_list.name}'
                 self.function_translator(member_class)
+            if 'Semantic' in member_class.type or 'SEMANTIC' in member_class.type:
+                print(self.code_python)
+                self.code_python += member_class.type
+                break
+            if 'Syntax' in member_class.type or 'SYNTAX' in member_class.type:
+                self.code_python += member_class.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_class.type or 'LEXICAL' in member_class.type:
+                self.code_python += member_class.type
+                print(self.code_python)
+                break
 
     def translator(self, syntax_tree):
         root = syntax_tree.children
@@ -411,8 +585,17 @@ class Translator:
                 if self.code_python[-1] == '\n':
                     self.code_python += '\t' * self.depth
                 self.declare_translator(member_root)
-            if 'Semantic' in member_root.type:
+            if 'Semantic' in member_root.type or 'SEMANTIC' in member_root.type:
+                print(self.code_python)
                 self.code_python += member_root.type
+                break
+            if 'Syntax' in member_root.type or 'SYNTAX' in member_root.type:
+                self.code_python += member_root.type
+                print(self.code_python)
+                break
+            if 'Lexical' in member_root.type or 'LEXICAL' in member_root.type:
+                self.code_python += member_root.type
+                print(self.code_python)
                 break
 
 

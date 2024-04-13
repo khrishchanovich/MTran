@@ -4,11 +4,11 @@ from function import write_output_to_file
 from main import lexer
 from constants import data_types, keywords, standart_libraries, operators
 import re
-
-pattern = r'\((.*?)\)'
-numbers = r'\d+'
-commas = r','
-semicolon = r';'
+#
+# pattern = r'\((.*?)\)'
+# numbers = r'\d+'
+# commas = r','
+# semicolon = r';'
 
 variable_types = {}
 variable_scope = []
@@ -248,9 +248,14 @@ def build_syntax_tree(tokens):
                                 temp_scope = True
                     if temp_scope:
                         break
-                variable_node = Node(token, 'Declare', data_stack[-1].lower())
-                data_stack.pop()
-                is_value = True
+                if current_node.type in ('Declare', 'Variable'):
+                    semantic_error_node = Node(token, 'Semantic error!')
+                    current_node.add_child(semantic_error_node)
+                    break
+                else:
+                    variable_node = Node(token, 'Declare', data_stack[-1].lower())
+                    data_stack.pop()
+                    is_value = True
             else:
                 if token not in variable_types:
                     first_children = current_node.children[-1]
@@ -372,6 +377,7 @@ def build_syntax_tree(tokens):
                     semantic_error_node = Node(token, 'Semantic error! The array parameter must be an integer.')
                     current_node.add_child(semantic_error_node)
                     break
+
             current_node = square_stack.pop()
             square_node = Node(token, 'End Square Block')
             current_node.add_child(square_node)
@@ -501,11 +507,25 @@ def build_syntax_tree(tokens):
                 # if current_node.name == 'ForLoop':
                 #     for_num += 1
 
+        if token == '<':
+            if current_node.type == 'Cout':
+                syntax_error_node = Node(token, 'Syntax error!')
+                current_node.add_child(syntax_error_node)
+                break
+
+        if token == '>':
+            if current_node.type == 'Cin':
+                syntax_error_node = Node(token, 'Syntax error!')
+                current_node.add_child(syntax_error_node)
+                break
+
 
         if token == "}":
+            temp_list = []
+            if current_node.type == 'Block' and current_node.name == 'Block':
+                temp_list.append(current_node)
             temp_node = current_node.parent
             if temp_node.type == 'Declare Array' or temp_node.type == 'Array':
-                temp_list = []
                 temp_list.extend(current_node.children)
                 sum_comma = 0
                 sum_values = 0
@@ -513,6 +533,11 @@ def build_syntax_tree(tokens):
                 for i in temp_list:
                     if i.name == ',':
                         sum_comma += 1
+                    if i.type == 'Block':
+                        sum_values += 1
+                        continue
+                    if i.type == 'End Block':
+                        continue
                     else:
                         sum_values += 1
 
@@ -523,15 +548,19 @@ def build_syntax_tree(tokens):
                     semantic_error_node = Node(token, 'Semantic error! The number of elements in the array exceeds the declared parameter.')
                     current_node.add_child(semantic_error_node)
                     break
-                if sum_comma >= sum_values or (sum_values - sum_comma) >= 2:
-                    syntax_error_node = Node('Missing comma', f'Syntax error!')
-                    current_node.add_child(syntax_error_node)
-                    break
+                # if sum_comma >= sum_values or (sum_values - sum_comma) >= 2:
+                #     syntax_error_node = Node('Missing comma', f'Syntax error!')
+                #     current_node.add_child(syntax_error_node)
+                #     break
 
             current_node = branch_stack.pop()
             close_branch_node = Node(current_node.name, 'End Block')
-            if current_node.name == 'ForLoop':
+            if current_node.type == 'ForLoop':
                 for_num -= 1
+                print('YES')
+                for var, scope, num in variable_scope:
+                    print(variable_scope)
+                    variable_scope.remove((var, scope, num))
             if current_node.type == 'ForLoop':
                 current_node.add_child(close_branch_node)
                 current_node = for_stack.pop()
@@ -703,6 +732,7 @@ def build_syntax_tree(tokens):
                 if current_node.type == 'ForLoop':
                     for var, scope, num in variable_scope:
                         if scope == 'for':
+                            print(variable_scope)
                             variable_scope.remove((var, scope, num))
 
                 if current_node.type == 'Method f':
@@ -947,33 +977,6 @@ def build_syntax_tree(tokens):
                 syntax_error_node = Node(token, 'Syntax error! After std')
                 current_node.add_child(syntax_error_node)
                 break
-
-
-
-        # if token in ('cout', 'cin', 'endl'):
-        #     if token == 'cout':
-        #         method_node = Node(token, 'Cout')
-        #     if token == 'cin':
-        #         method_node = Node(token, 'Cin')
-        #     if token == 'endl':
-        #         method_node = Node(token, 'Endl')
-        #
-        #     std_stack.append(current_node)
-        #     current_node.add_child(method_node)
-        #     current_node = method_node
-        #
-        # if token == 'endl':
-        #     method_node = Node(token, 'Endl')
-        #     sum = 0
-        #     if len(std_stack) != 0:
-        #         current_node = std_stack.pop()
-        #     sum_func = 0
-        #     for i in std_stack:
-        #         sum_func += 1
-        #     if sum_func > 0:
-        #         while sum_func != 0:
-        #             current_node = std_stack.pop()
-        #             sum_func -= 1
 
         if token == "<<" or token == ">>":
             io_operator_node = Node(token, 'Operator Input')
